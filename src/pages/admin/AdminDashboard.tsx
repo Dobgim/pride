@@ -325,7 +325,7 @@ export default function AdminDashboard() {
                   <div className="adm-page-header">
                     <div>
                       <h2>Dashboard Overview</h2>
-                      <p>Connected to Supabase (cyyntnyvzfrmqdgpodbp). Manage your store live.</p>
+                      <p>Connected to Supabase · Products tab is ready — add your real products to get started.</p>
                     </div>
                     <div className="adm-page-actions">
                       <button className="adm-btn-outline" onClick={refreshProducts}><Download size={15} /> Refresh</button>
@@ -521,6 +521,16 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="adm-card adm-table-card">
+                    {filteredProducts.length === 0 ? (
+                      <div style={{ padding: '60px 32px', textAlign: 'center' }}>
+                        <div style={{ fontSize: 48, marginBottom: 16 }}>📦</div>
+                        <h3 style={{ marginBottom: 8, fontSize: 18 }}>No products yet</h3>
+                        <p style={{ color: '#9ca3af', marginBottom: 24, maxWidth: 340, margin: '0 auto 24px' }}>
+                          Your catalogue is empty and ready. Click <strong>Add Product</strong> to upload your first scooter or accessory.
+                        </p>
+                        <button className="adm-btn-primary" onClick={openAddModal}><Plus size={15} /> Add Your First Product</button>
+                      </div>
+                    ) : (
                     <div className="adm-table-wrap">
                       <table className="adm-table">
                         <thead>
@@ -561,10 +571,7 @@ export default function AdminDashboard() {
                               <td>
                                 <div className="adm-row-actions">
                                   <button className="adm-icon-btn edit" onClick={() => openEditModal(p)}><Edit2 size={14} /></button>
-                                  <button
-                                    className="adm-icon-btn delete"
-                                    onClick={() => handleDeleteProduct(p.id)}
-                                  >
+                                  <button className="adm-icon-btn delete" onClick={() => handleDeleteProduct(p.id)}>
                                     <Trash2 size={14} />
                                   </button>
                                 </div>
@@ -574,6 +581,7 @@ export default function AdminDashboard() {
                         </tbody>
                       </table>
                     </div>
+                    )}
                   </div>
                 </div>
               )}
