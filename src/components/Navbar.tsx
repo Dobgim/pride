@@ -83,7 +83,7 @@ export default function Navbar() {
             </div>
             <div className="navbar-topbar-right">
               <Phone size={13} />
-              <span>1-800-555-0199</span>
+              <span>+1 (912) 558-9673</span>
               <span className="topbar-dot">•</span>
               <span>Mon–Sat 9am–6pm</span>
             </div>
@@ -275,7 +275,7 @@ export default function Navbar() {
                 <div className="mobile-contact-info">
                   <Phone size={16} />
                   <div>
-                    <div className="mobile-phone">1-800-555-0199</div>
+                    <div className="mobile-phone">+1 (912) 558-9673</div>
                     <div className="mobile-hours">Mon–Sat 9am–6pm</div>
                   </div>
                 </div>

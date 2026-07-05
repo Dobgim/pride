@@ -42,8 +42,8 @@ export default function Footer() {
               <Link to="/contact" className="btn btn-white">
                 Get Free Advice <ArrowRight size={16} />
               </Link>
-              <a href="tel:18005550199" className="btn btn-outline" style={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)' }}>
-                <Phone size={16} /> 1-800-555-0199
+              <a href="tel:+19125589673" className="btn btn-outline" style={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)' }}>
+                <Phone size={16} /> +1 (912) 558-9673
               </a>
             </div>
           </div>
@@ -69,9 +69,9 @@ export default function Footer() {
                 Helping people stay independent, active, and mobile for over 20 years. Trusted by thousands of customers across the US.
               </p>
               <div className="footer-contact-items">
-                <a href="tel:18005550199" className="footer-contact-item">
+                <a href="tel:+19125589673" className="footer-contact-item">
                   <Phone size={14} />
-                  <span>1-800-555-0199</span>
+                  <span>+1 (912) 558-9673</span>
                 </a>
                 <a href="mailto:caredriveenclosedmobility@gmail.com" className="footer-contact-item">
                   <Mail size={14} />
@@ -79,7 +79,7 @@ export default function Footer() {
                 </a>
                 <div className="footer-contact-item">
                   <MapPin size={14} />
-                  <span>123 Mobility Way, Suite 100, Austin, TX 78701</span>
+                  <span>3606 Norwich Street, Brunswick, Georgia 31520</span>
                 </div>
               </div>
               <div className="footer-social">

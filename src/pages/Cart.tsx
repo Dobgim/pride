@@ -1,30 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, ShieldCheck, Truck, RotateCcw, CheckCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 
 const WHATSAPP_NUMBER = '19125589673';
 
-const trustItems = [
-  { icon: <ShieldCheck size={16} />, text: 'Secure Checkout' },
-  { icon: <Truck size={16} />, text: 'Free US Delivery over $500' },
-  { icon: <RotateCcw size={16} />, text: '14-Day Returns' },
-];
+type PaymentOption = 'full' | 'down';
 
 export default function Cart() {
   const { items, removeItem, updateQuantity, total, clearCart } = useCart();
+  const [paymentOption, setPaymentOption] = useState<PaymentOption | null>(null);
+  const [paymentError, setPaymentError] = useState(false);
+
+  // Always free shipping
+  const grandTotal = total;
+  const downPayment = total * 0.3; // 30% down payment
 
   const handleWhatsAppCheckout = () => {
-    const delivery = total >= 500 ? 0 : 49.99;
-    const grandTotal = total + delivery;
+    if (!paymentOption) {
+      setPaymentError(true);
+      document.getElementById('payment-options')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    setPaymentError(false);
+
     const itemLines = items
       .map(i => `• ${i.product.name} x${i.quantity} — $${(i.product.price * i.quantity).toLocaleString()}`)
       .join('\n');
-    const deliveryLine = delivery === 0 ? 'Delivery: FREE (over $500)' : `Delivery: $${delivery.toFixed(2)}`;
+
+    const paymentLine =
+      paymentOption === 'full'
+        ? `*Payment: Full Payment — $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}*`
+        : `*Payment: Down Payment (30%) — $${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })}* (Balance: $${(grandTotal - downPayment).toLocaleString(undefined, { minimumFractionDigits: 2 })})`;
+
     const message = encodeURIComponent(
-      `Hello Care Drive! I'd like to order the following:\n\n${itemLines}\n\n${deliveryLine}\n*Total: $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}*\n\nPlease confirm my order. Thank you!`
+      `Hello Care Drive! I'd like to order the following:\n\n${itemLines}\n\nDelivery: FREE (3-Day Shipping)\n*Order Total: $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}*\n\n${paymentLine}\n\nPlease confirm my order. Thank you!`
     );
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
   };
@@ -56,10 +68,6 @@ export default function Cart() {
       </div>
     );
   }
-
-  const delivery = total >= 500 ? 0 : 49.99;
-  const grandTotal = total + delivery;
-  const vat = grandTotal * 0.2;
 
   return (
     <div className="page-wrapper">
@@ -142,62 +150,100 @@ export default function Cart() {
             <aside className="cart-summary">
               <h3 className="cart-summary-title">Order Summary</h3>
 
+              {/* Free Shipping Banner */}
+              <div className="cart-free-shipping-banner">
+                <Truck size={18} />
+                <div>
+                  <div className="cart-shipping-title">FREE 3-Day Shipping</div>
+                  <div className="cart-shipping-sub">All orders ship free — delivered in 3 business days</div>
+                </div>
+              </div>
+
               <div className="cart-summary-rows">
                 <div className="cart-summary-row">
                   <span>Subtotal</span>
                   <span>${total.toLocaleString()}</span>
                 </div>
                 <div className="cart-summary-row">
-                  <span>US Delivery</span>
-                  <span className={delivery === 0 ? 'free-delivery' : ''}>
-                    {delivery === 0 ? 'FREE' : `$${delivery.toFixed(2)}`}
-                  </span>
+                  <span>Shipping</span>
+                  <span className="free-delivery">FREE</span>
                 </div>
-                {delivery === 0 && (
-                  <div className="cart-delivery-note">
-                    <Truck size={13} /> Free delivery applied (orders over $500)
-                  </div>
-                )}
                 <div className="cart-summary-divider" />
                 <div className="cart-summary-row cart-summary-total">
-                  <span>Total</span>
+                  <span>Order Total</span>
                   <span>${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
-                <div className="cart-vat-breakdown">Sales tax exempt for medical needs</div>
               </div>
 
+              {/* ── Payment Options ── */}
+              <div id="payment-options" className={`cart-payment-section ${paymentError ? 'cart-payment-error' : ''}`}>
+                <div className="cart-payment-label">
+                  <CheckCircle size={15} />
+                  Choose Payment Option *
+                </div>
+                {paymentError && (
+                  <div className="cart-payment-error-msg">Please select a payment option before checkout.</div>
+                )}
+
+                {/* Full Payment */}
+                <label
+                  className={`cart-payment-option ${paymentOption === 'full' ? 'selected' : ''}`}
+                  onClick={() => { setPaymentOption('full'); setPaymentError(false); }}
+                >
+                  <div className="cart-payment-radio">
+                    <div className={`cart-radio-dot ${paymentOption === 'full' ? 'active' : ''}`} />
+                  </div>
+                  <div className="cart-payment-option-body">
+                    <div className="cart-payment-option-title">💳 Full Payment</div>
+                    <div className="cart-payment-option-desc">Pay the full amount today</div>
+                    <div className="cart-payment-option-amount">
+                      ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </div>
+                  </div>
+                </label>
+
+                {/* Down Payment */}
+                <label
+                  className={`cart-payment-option ${paymentOption === 'down' ? 'selected' : ''}`}
+                  onClick={() => { setPaymentOption('down'); setPaymentError(false); }}
+                >
+                  <div className="cart-payment-radio">
+                    <div className={`cart-radio-dot ${paymentOption === 'down' ? 'active' : ''}`} />
+                  </div>
+                  <div className="cart-payment-option-body">
+                    <div className="cart-payment-option-title">🤝 Down Payment (30%)</div>
+                    <div className="cart-payment-option-desc">
+                      Pay 30% now — balance on delivery
+                    </div>
+                    <div className="cart-payment-option-amount">
+                      ${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      <span className="cart-payment-balance"> + ${(grandTotal - downPayment).toLocaleString(undefined, { minimumFractionDigits: 2 })} on delivery</span>
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              {/* Checkout button */}
               <button
                 className="btn btn-accent btn-lg w-full"
-                style={{ justifyContent: 'center', background: '#25d366', borderColor: '#25d366' }}
+                style={{ justifyContent: 'center', background: '#25d366', borderColor: '#25d366', marginTop: 16 }}
                 onClick={handleWhatsAppCheckout}
               >
-                {/* WhatsApp icon */}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18" height="18" fill="white" style={{flexShrink:0}}><path d="M16 0C7.163 0 0 7.163 0 16c0 2.82.736 5.462 2.025 7.756L0 32l8.466-2.217A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm8.315 22.292c-.35.98-2.03 1.88-2.793 1.95-.713.065-1.384.322-4.666-1.037-3.93-1.63-6.453-5.65-6.646-5.91-.193-.26-1.576-2.098-1.576-4.002s.998-2.84 1.354-3.23c.356-.39.776-.488 1.034-.488.258 0 .516.002.742.013.237.012.556-.09.87.664.35.836 1.19 2.893 1.295 3.103.104.21.174.457.034.736-.14.28-.21.456-.42.703-.21.247-.44.551-.63.74-.21.21-.428.437-.185.857.243.42 1.08 1.78 2.32 2.884 1.596 1.42 2.943 1.86 3.363 2.07.42.21.664.175.908-.104.244-.28 1.048-1.225 1.328-1.645.28-.42.558-.35.94-.21.383.14 2.433 1.148 2.852 1.357.42.21.698.315.8.49.104.175.104 1.015-.246 1.995z"/></svg>
-                Order via WhatsApp <ArrowRight size={18} />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18" height="18" fill="white" style={{flexShrink:0}}>
+                  <path d="M16 0C7.163 0 0 7.163 0 16c0 2.82.736 5.462 2.025 7.756L0 32l8.466-2.217A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm8.315 22.292c-.35.98-2.03 1.88-2.793 1.95-.713.065-1.384.322-4.666-1.037-3.93-1.63-6.453-5.65-6.646-5.91-.193-.26-1.576-2.098-1.576-4.002s.998-2.84 1.354-3.23c.356-.39.776-.488 1.034-.488.258 0 .516.002.742.013.237.012.556-.09.87.664.35.836 1.19 2.893 1.295 3.103.104.21.174.457.034.736-.14.28-.21.456-.42.703-.21.247-.44.551-.63.74-.21.21-.428.437-.185.857.243.42 1.08 1.78 2.32 2.884 1.596 1.42 2.943 1.86 3.363 2.07.42.21.664.175.908-.104.244-.28 1.048-1.225 1.328-1.645.28-.42.558-.35.94-.21.383.14 2.433 1.148 2.852 1.357.42.21.698.315.8.49.104.175.104 1.015-.246 1.995z"/>
+                </svg>
+                Proceed to Checkout <ArrowRight size={18} />
               </button>
 
-              {/* Trust */}
+              {/* Trust badges */}
               <div className="cart-trust">
-                {trustItems.map(t => (
-                  <div key={t.text} className="cart-trust-item">
-                    {t.icon}<span>{t.text}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Promo code */}
-              <div className="cart-promo">
-                <div className="form-group">
-                  <label className="form-label" htmlFor="promo-code">Have a discount code?</label>
-                  <div className="cart-promo-row">
-                    <input id="promo-code" type="text" className="form-input" placeholder="Enter code" />
-                    <button className="btn btn-primary btn-sm">Apply</button>
-                  </div>
-                </div>
+                <div className="cart-trust-item"><ShieldCheck size={16} /><span>Secure Checkout</span></div>
+                <div className="cart-trust-item"><Truck size={16} /><span>Free 3-Day Shipping</span></div>
+                <div className="cart-trust-item"><RotateCcw size={16} /><span>14-Day Returns</span></div>
               </div>
 
               <div className="cart-help">
-                Need help? <a href="tel:18005550199">Call 1-800-555-0199</a>
+                Need help? <a href="tel:+19125589673">Call +1 (912) 558-9673</a>
               </div>
             </aside>
           </div>

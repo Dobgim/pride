@@ -132,6 +132,7 @@ export default function AdminDashboard() {
   const [name, setName] = useState('');
   const [category, setCategory] = useState<Product['category']>('lightweight');
   const [price, setPrice] = useState(0);
+  const [downPayment, setDownPayment] = useState<number | ''>('');
   const [description, setDescription] = useState('');
   const [badge, setBadge] = useState('');
   const [inStock, setInStock] = useState(true);
@@ -165,6 +166,7 @@ export default function AdminDashboard() {
     setName('');
     setCategory('lightweight');
     setPrice(0);
+    setDownPayment('');
     setDescription('');
     setBadge('');
     setInStock(true);
@@ -179,6 +181,7 @@ export default function AdminDashboard() {
     setName(product.name);
     setCategory(product.category);
     setPrice(product.price);
+    setDownPayment(product.downPayment ?? '');
     setDescription(product.shortDesc);
     setBadge(product.badge || '');
     setInStock(product.inStock);
@@ -242,6 +245,7 @@ export default function AdminDashboard() {
           name,
           category,
           price: Number(price),
+          downPayment: downPayment !== '' ? Number(downPayment) : undefined,
           image: mainImage,
           images: finalImages,
           rating: 5.0,
@@ -269,6 +273,7 @@ export default function AdminDashboard() {
           name,
           category,
           price: Number(price),
+          downPayment: downPayment !== '' ? Number(downPayment) : undefined,
           shortDesc: description,
           badge: badge || undefined,
           inStock,
@@ -927,7 +932,18 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="adm-field">
-                    <label>Badge / Label (Optional)</label>
+                    <label>Down Payment Amount ($) <span style={{fontSize:11,color:'rgba(255,255,255,0.4)',fontWeight:400}}>(optional — leave blank to use 30% default)</span></label>
+                    <input
+                      type="number"
+                      value={downPayment}
+                      onChange={e => setDownPayment(e.target.value === '' ? '' : Number(e.target.value))}
+                      placeholder={price ? `e.g. ${Math.round(Number(price) * 0.3)} (30% = $${Math.round(Number(price) * 0.3)})` : 'e.g. 450'}
+                      min="0"
+                    />
+                  </div>
+
+                  <div className="adm-field">
+                    <label>Badge / Label <span style={{fontSize:11,color:'rgba(255,255,255,0.4)',fontWeight:400}}>(optional)</span></label>
                     <input
                       type="text"
                       value={badge}

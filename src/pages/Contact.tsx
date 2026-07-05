@@ -5,9 +5,9 @@ import { Phone, Mail, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
 import './Contact.css';
 
 const contactInfo = [
-  { icon: <Phone size={20} />, label: 'Phone', value: '1-800-555-0199', sub: 'Mon–Sat 9am–6pm', href: 'tel:18005550199' },
+  { icon: <Phone size={20} />, label: 'Phone', value: '+1 (912) 558-9673', sub: 'Mon–Sat 9am–6pm', href: 'tel:+19125589673' },
   { icon: <Mail size={20} />, label: 'Email', value: 'caredriveenclosedmobility@gmail.com', sub: 'We reply within 24 hours', href: 'mailto:caredriveenclosedmobility@gmail.com' },
-  { icon: <MapPin size={20} />, label: 'Head Office', value: '123 Mobility Way', sub: 'Austin, TX 78701, US' },
+  { icon: <MapPin size={20} />, label: 'Address', value: '3606 Norwich Street', sub: 'Brunswick, Georgia 31520' },
   { icon: <Clock size={20} />, label: 'Opening Hours', value: 'Mon–Sat: 9am – 6pm', sub: 'Sunday: Closed' },
 ];
 

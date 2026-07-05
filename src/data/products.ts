@@ -5,6 +5,7 @@ export interface Product {
   name: string;
   category: 'lightweight' | 'folding' | 'road' | 'accessory';
   price: number;
+  downPayment?: number;
   originalPrice?: number;
   image: string;
   images?: string[];
@@ -29,6 +30,7 @@ export const mapDbProductToClient = (db: any): Product => ({
   name: db.name,
   category: db.category,
   price: Number(db.price),
+  downPayment: db.down_payment ? Number(db.down_payment) : undefined,
   originalPrice: db.original_price ? Number(db.original_price) : undefined,
   image: db.image,
   images: db.images || (db.specs && db.specs._images) || [],
@@ -50,6 +52,7 @@ export const mapClientProductToDb = (p: Product) => {
     name: p.name,
     category: p.category,
     price: p.price,
+    down_payment: p.downPayment || null,
     original_price: p.originalPrice || null,
     image: p.image,
     rating: p.rating,

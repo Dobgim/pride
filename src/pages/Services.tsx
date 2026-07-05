@@ -113,7 +113,7 @@ export default function Services() {
               { icon: <ShieldCheck size={18} />, text: '90-day labour warranty on all repairs' },
               { icon: <Star size={18} />, text: '4.9 star rated service' },
               { icon: <Home size={18} />, text: 'We come to you — free home visits' },
-              { icon: <Phone size={18} />, text: '7-day support: 1-800-555-0199' },
+              { icon: <Phone size={18} />, text: '7-day support: +1 (912) 558-9673' },
             ].map(item => (
               <div key={item.text} className="trust-strip-item">
                 <div className="trust-strip-icon">{item.icon}</div>
@@ -225,7 +225,7 @@ export default function Services() {
           <p style={{ color: 'var(--color-gray-500)', marginBottom: 28 }}>Call us or use the contact form and one of our team will arrange a convenient time for you.</p>
           <div className="flex-center gap-3">
             <Link to="/contact" className="btn btn-accent btn-lg">Book Online <ArrowRight size={16} /></Link>
-            <a href="tel:18005550199" className="btn btn-outline btn-lg"><Phone size={16} /> 1-800-555-0199</a>
+            <a href="tel:+19125589673" className="btn btn-outline btn-lg"><Phone size={16} /> +1 (912) 558-9673</a>
           </div>
         </div>
       </section>
