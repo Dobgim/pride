@@ -762,6 +762,114 @@
   color: #60a5fa;
 }
 
+/* Desktop/Mobile visibility utilities */
+.adm-desktop-only { display: block; }
+.adm-mobile-only  { display: none; }
+
+/* Mobile product card grid */
+.adm-product-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.adm-product-card-item {
+  background: #0b0f19;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  gap: 0;
+}
+
+.adm-product-card-img {
+  width: 110px;
+  min-width: 110px;
+  position: relative;
+  background: rgba(255,255,255,0.03);
+}
+
+.adm-product-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.adm-product-badge-abs {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+}
+
+.adm-product-card-body {
+  flex: 1;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.adm-product-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.adm-product-card-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: #10b981;
+  white-space: nowrap;
+}
+
+.adm-product-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.adm-product-card-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adm-product-card-btn.edit-btn {
+  background: rgba(59,130,246,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59,130,246,0.2);
+}
+
+.adm-product-card-btn.edit-btn:hover {
+  background: rgba(59,130,246,0.25);
+}
+
+.adm-product-card-btn.delete-btn {
+  background: rgba(239,68,68,0.12);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.adm-product-card-btn.delete-btn:hover {
+  background: rgba(239,68,68,0.25);
+}
+
+@media (max-width: 767px) {
+  .adm-desktop-only { display: none !important; }
+  .adm-mobile-only  { display: flex !important; flex-direction: column; }
+}
+
 /* Customers */
 .adm-customer-cell {
   display: flex;

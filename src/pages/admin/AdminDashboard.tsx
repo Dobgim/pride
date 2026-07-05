@@ -608,69 +608,97 @@ export default function AdminDashboard() {
                       <button className="adm-btn-primary" onClick={openAddModal}><Plus size={15} /> Add Product</button>
                     </div>
                   </div>
-                  <div className="adm-card adm-table-card">
-                    {filteredProducts.length === 0 ? (
-                      <div style={{ padding: '60px 32px', textAlign: 'center' }}>
-                        <div style={{ fontSize: 48, marginBottom: 16 }}>📦</div>
-                        <h3 style={{ marginBottom: 8, fontSize: 18 }}>No products yet</h3>
-                        <p style={{ color: '#9ca3af', marginBottom: 24, maxWidth: 340, margin: '0 auto 24px' }}>
-                          Your catalogue is empty and ready. Click <strong>Add Product</strong> to upload your first scooter or accessory.
-                        </p>
-                        <button className="adm-btn-primary" onClick={openAddModal}><Plus size={15} /> Add Your First Product</button>
-                      </div>
-                    ) : (
-                    <div className="adm-table-wrap">
-                      <table className="adm-table">
-                        <thead>
-                          <tr>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Rating</th>
-                            <th>Stock</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredProducts.map(p => (
-                            <tr key={p.id}>
-                              <td>
-                                <img src={p.image} alt={p.name} className="adm-product-thumb" />
-                              </td>
-                              <td>
-                                <div className="adm-product-name">{p.name}</div>
-                                {p.badge && <span className="adm-product-badge">{p.badge}</span>}
-                              </td>
-                              <td className="adm-td-cap">{p.category}</td>
-                              <td className="adm-td-bold">${p.price.toLocaleString()}</td>
-                              <td>
-                                <div className="adm-rating">
-                                  <Star size={13} fill="#f59e0b" color="#f59e0b" />
-                                  <span>{p.rating}</span>
-                                  <span className="adm-td-muted">({p.reviews})</span>
-                                </div>
-                              </td>
-                              <td>
-                                <span className={`adm-status-badge ${p.inStock ? 'status-green' : 'status-red'}`}>
-                                  {p.inStock ? 'In Stock' : 'Out of Stock'}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="adm-row-actions">
-                                  <button className="adm-icon-btn edit" onClick={() => openEditModal(p)}><Edit2 size={14} /></button>
-                                  <button className="adm-icon-btn delete" onClick={() => handleDeleteProduct(p.id)}>
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+
+                  {filteredProducts.length === 0 ? (
+                    <div className="adm-card" style={{ padding: '60px 32px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 48, marginBottom: 16 }}>📦</div>
+                      <h3 style={{ marginBottom: 8, fontSize: 18, color: 'white' }}>No products yet</h3>
+                      <p style={{ color: '#9ca3af', marginBottom: 24, maxWidth: 340, margin: '0 auto 24px' }}>
+                        Your catalogue is empty. Click <strong>Add Product</strong> to upload your first scooter or accessory.
+                      </p>
+                      <button className="adm-btn-primary" onClick={openAddModal}><Plus size={15} /> Add Your First Product</button>
                     </div>
-                    )}
-                  </div>
+                  ) : (
+                    <>
+                      {/* Desktop table view (hidden on mobile) */}
+                      <div className="adm-card adm-table-card adm-desktop-only">
+                        <div className="adm-table-wrap">
+                          <table className="adm-table">
+                            <thead>
+                              <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredProducts.map(p => (
+                                <tr key={p.id}>
+                                  <td>
+                                    <img src={p.image} alt={p.name} className="adm-product-thumb"
+                                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mobility_Scooter_-_HPIM1842.JPG'; }} />
+                                  </td>
+                                  <td>
+                                    <div className="adm-product-name">{p.name}</div>
+                                    {p.badge && <span className="adm-product-badge">{p.badge}</span>}
+                                  </td>
+                                  <td className="adm-td-cap">{p.category}</td>
+                                  <td className="adm-td-bold">${p.price.toLocaleString()}</td>
+                                  <td>
+                                    <span className={`adm-status-badge ${p.inStock ? 'status-green' : 'status-red'}`}>
+                                      {p.inStock ? 'In Stock' : 'Out of Stock'}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <div className="adm-row-actions">
+                                      <button className="adm-icon-btn edit" title="Edit" onClick={() => openEditModal(p)}><Edit2 size={14} /></button>
+                                      <button className="adm-icon-btn delete" title="Delete" onClick={() => handleDeleteProduct(p.id)}><Trash2 size={14} /></button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* Mobile card grid (hidden on desktop) */}
+                      <div className="adm-product-cards adm-mobile-only">
+                        {filteredProducts.map(p => (
+                          <div key={p.id} className="adm-product-card-item">
+                            <div className="adm-product-card-img">
+                              <img src={p.image} alt={p.name}
+                                onError={(e) => { (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mobility_Scooter_-_HPIM1842.JPG'; }} />
+                              {p.badge && <span className="adm-product-badge adm-product-badge-abs">{p.badge}</span>}
+                            </div>
+                            <div className="adm-product-card-body">
+                              <div className="adm-product-card-top">
+                                <div>
+                                  <div className="adm-product-name">{p.name}</div>
+                                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textTransform: 'capitalize', marginTop: 2 }}>{p.category}</div>
+                                </div>
+                                <div className="adm-product-card-price">${p.price.toLocaleString()}</div>
+                              </div>
+                              <span className={`adm-status-badge ${p.inStock ? 'status-green' : 'status-red'}`} style={{ marginTop: 8, display: 'inline-flex' }}>
+                                {p.inStock ? '✓ In Stock' : '✗ Out of Stock'}
+                              </span>
+                              <div className="adm-product-card-actions">
+                                <button className="adm-product-card-btn edit-btn" onClick={() => openEditModal(p)}>
+                                  <Edit2 size={14} /> Edit
+                                </button>
+                                <button className="adm-product-card-btn delete-btn" onClick={() => handleDeleteProduct(p.id)}>
+                                  <Trash2 size={14} /> Delete
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
