@@ -31,12 +31,22 @@
 @media (max-width: 768px) {
   .footer-cta-inner { flex-direction: column; align-items: flex-start; }
   .footer-cta-actions { flex-wrap: wrap; }
+  .footer-cta { padding: 36px 0; }
+  .footer-cta-text h3 { font-size: 22px; }
+}
+
+@media (max-width: 480px) {
+  .footer-cta-actions .btn { flex: 1; min-width: 140px; justify-content: center; }
 }
 
 /* ===== MAIN FOOTER ===== */
 .footer-main {
   background: var(--color-gray-900);
   padding: 72px 0 48px;
+}
+
+@media (max-width: 767px) {
+  .footer-main { padding: 48px 0 32px; }
 }
 
 .footer-grid {
