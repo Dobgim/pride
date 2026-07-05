@@ -24,7 +24,7 @@ export default function RoadScooters() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    setProducts(getProductsByCategory('road'));
+    getProductsByCategory('road').then(data => setProducts(data));
   }, []);
 
   const sorted = [...products].sort((a, b) => {

@@ -8,7 +8,13 @@ import {
   Star, AlertTriangle, CheckCircle, Clock, BarChart3, X,
   Menu, ArrowUpRight, Filter, Download, Save, Trash
 } from 'lucide-react';
-import { loadProductsFromStorage, saveProductsToStorage, type Product } from '../../data/products';
+import {
+  loadProductsFromSupabase,
+  addProductToSupabase,
+  updateProductInSupabase,
+  deleteProductFromSupabase,
+  type Product
+} from '../../data/products';
 import './AdminDashboard.css';
 
 /* ── Auth guard ── */
@@ -76,6 +82,7 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [productList, setProductList] = useState<Product[]>([]);
   const [notifications] = useState(3);
+  const [loading, setLoading] = useState(false);
 
   // Form state for Add/Edit Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,9 +98,21 @@ export default function AdminDashboard() {
   const [inStock, setInStock] = useState(true);
   const [image, setImage] = useState('/images/folding_lightweight.png');
 
+  // Load from Supabase
+  const refreshProducts = async () => {
+    setLoading(true);
+    try {
+      const data = await loadProductsFromSupabase();
+      setProductList(data);
+    } catch (e) {
+      console.error('Failed to load products:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Load products from storage on mount
-    setProductList(loadProductsFromStorage());
+    refreshProducts();
   }, []);
 
   const handleLogout = () => {
@@ -126,63 +145,72 @@ export default function AdminDashboard() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      const updated = productList.filter(p => p.id !== id);
-      setProductList(updated);
-      saveProductsToStorage(updated);
+  const handleDeleteProduct = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this product from Supabase?')) {
+      try {
+        await deleteProductFromSupabase(id);
+        setProductList(prev => prev.filter(p => p.id !== id));
+      } catch (e) {
+        alert('Failed to delete product. Please try again.');
+        console.error(e);
+      }
     }
   };
 
-  const handleSaveProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    if (modalMode === 'add') {
-      const newId = `${category === 'lightweight' ? 'ls' : category === 'folding' ? 'fs' : category === 'road' ? 'rs' : 'acc'}-${Date.now()}`;
-      const newProduct: Product = {
-        id: newId,
-        name,
-        category,
-        price: Number(price),
-        image: image || (category === 'road' ? '/images/enclosed_cabin.png' : category === 'accessory' ? 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80' : '/images/folding_lightweight.png'),
-        rating: 5.0,
-        reviews: 1,
-        badge: badge || undefined,
-        shortDesc: description,
-        features: ['Premium Quality', 'Care Drive Approved'],
-        specs: {
-          Category: category,
-          Price: `£${price}`,
-        },
-        inStock,
-        isNew: true,
-      };
+    try {
+      if (modalMode === 'add') {
+        const newId = `${category === 'lightweight' ? 'ls' : category === 'folding' ? 'fs' : category === 'road' ? 'rs' : 'acc'}-${Date.now()}`;
+        const newProduct: Product = {
+          id: newId,
+          name,
+          category,
+          price: Number(price),
+          image: image || (category === 'road' ? '/images/enclosed_cabin.png' : category === 'accessory' ? 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80' : '/images/folding_lightweight.png'),
+          rating: 5.0,
+          reviews: 1,
+          badge: badge || undefined,
+          shortDesc: description,
+          features: ['Premium Quality', 'Care Drive Approved'],
+          specs: {
+            Category: category,
+            Price: `£${price}`,
+          },
+          inStock,
+          isNew: true,
+        };
 
-      const updated = [...productList, newProduct];
-      setProductList(updated);
-      saveProductsToStorage(updated);
-    } else {
-      // Edit mode
-      const updated = productList.map(p => {
-        if (p.id === currentProductId) {
-          return {
-            ...p,
-            name,
-            category,
-            price: Number(price),
-            shortDesc: description,
-            badge: badge || undefined,
-            inStock,
-            image,
-          };
-        }
-        return p;
-      });
-      setProductList(updated);
-      saveProductsToStorage(updated);
+        await addProductToSupabase(newProduct);
+        setProductList(prev => [...prev, newProduct]);
+      } else {
+        // Edit mode
+        const originalProduct = productList.find(p => p.id === currentProductId);
+        if (!originalProduct) return;
+
+        const updatedProduct: Product = {
+          ...originalProduct,
+          name,
+          category,
+          price: Number(price),
+          shortDesc: description,
+          badge: badge || undefined,
+          inStock,
+          image,
+        };
+
+        await updateProductInSupabase(updatedProduct);
+        setProductList(prev => prev.map(p => p.id === currentProductId ? updatedProduct : p));
+      }
+      setIsModalOpen(false);
+    } catch (e) {
+      alert('Failed to save product. Check console for details.');
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
-
-    setIsModalOpen(false);
   };
 
   const maxRevenue = Math.max(...weeklyRevenue);
@@ -260,7 +288,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="adm-topbar-right">
-            <button className="adm-notif-btn">
+            <button className="adm-notif-btn" onClick={refreshProducts} title="Sync with Supabase">
               <Bell size={18} />
               {notifications > 0 && <span className="adm-notif-badge">{notifications}</span>}
             </button>
@@ -276,6 +304,12 @@ export default function AdminDashboard() {
 
         {/* Page content */}
         <div className="adm-content">
+          {loading && !isModalOpen && (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+              <div className="alp-spinner" style={{ width: 40, height: 40, border: '4px solid rgba(255,255,255,0.1)', borderTopColor: '#10b981' }} />
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
             <motion.div
               key={activeNav}
@@ -291,10 +325,10 @@ export default function AdminDashboard() {
                   <div className="adm-page-header">
                     <div>
                       <h2>Dashboard Overview</h2>
-                      <p>Welcome back! Here's what's happening today.</p>
+                      <p>Connected to Supabase (cyyntnyvzfrmqdgpodbp). Manage your store live.</p>
                     </div>
                     <div className="adm-page-actions">
-                      <button className="adm-btn-outline"><Download size={15} /> Export</button>
+                      <button className="adm-btn-outline" onClick={refreshProducts}><Download size={15} /> Refresh</button>
                       <button className="adm-btn-primary" onClick={openAddModal}><Plus size={15} /> New Product</button>
                     </div>
                   </div>
@@ -813,7 +847,9 @@ export default function AdminDashboard() {
 
                 <div className="adm-modal-actions">
                   <button type="button" className="adm-btn-outline" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                  <button type="submit" className="adm-btn-primary"><Save size={15} /> Save Product</button>
+                  <button type="submit" className="adm-btn-primary" disabled={loading}>
+                    {loading ? <span className="alp-spinner" style={{ width: 16, height: 16 }} /> : <Save size={15} />} Save Product
+                  </button>
                 </div>
               </form>
             </motion.div>

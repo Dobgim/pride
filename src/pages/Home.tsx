@@ -111,7 +111,7 @@ export default function Home() {
   const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
 
   React.useEffect(() => {
-    setFeaturedProducts(getFeaturedProducts());
+    getFeaturedProducts().then(data => setFeaturedProducts(data));
   }, []);
   return (
     <main>

@@ -17,7 +17,7 @@ export default function Accessories() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    setProducts(getProductsByCategory('accessory'));
+    getProductsByCategory('accessory').then(data => setProducts(data));
   }, []);
 
   const sorted = [...products].sort((a, b) => {

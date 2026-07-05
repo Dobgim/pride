@@ -24,7 +24,7 @@ export default function LightweightScooters() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    setProducts(getProductsByCategory('lightweight'));
+    getProductsByCategory('lightweight').then(data => setProducts(data));
   }, []);
 
   const sorted = [...products].sort((a, b) => {

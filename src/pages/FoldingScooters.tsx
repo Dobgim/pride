@@ -24,7 +24,7 @@ export default function FoldingScooters() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    setProducts(getProductsByCategory('folding'));
+    getProductsByCategory('folding').then(data => setProducts(data));
   }, []);
 
   const sorted = [...products].sort((a, b) => {

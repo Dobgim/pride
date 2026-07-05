@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, SlidersHorizontal } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { loadProductsFromStorage, type Product } from '../data/products';
+import { loadProductsFromSupabase, type Product } from '../data/products';
 import './ProductListPage.css';
 
 const sortOptions = [
@@ -18,9 +18,9 @@ export default function MobilityScooters() {
   const [scooters, setScooters] = useState<Product[]>([]);
 
   useEffect(() => {
-    // Load products on mount
-    const allProducts = loadProductsFromStorage();
-    setScooters(allProducts.filter(p => p.category !== 'accessory'));
+    loadProductsFromSupabase().then(allProducts => {
+      setScooters(allProducts.filter((p: Product) => p.category !== 'accessory'));
+    });
   }, []);
 
   const sorted = [...scooters].sort((a, b) => {
