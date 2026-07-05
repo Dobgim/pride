@@ -888,6 +888,7 @@ export default function AdminDashboard() {
               </div>
 
               <form onSubmit={handleSaveProduct} className="adm-modal-form">
+                <div className="adm-modal-form-body">
                 <div className="adm-modal-grid">
                   <div className="adm-field">
                     <label>Product Name</label>
@@ -1048,6 +1049,7 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
+                </div>{/* end adm-modal-form-body */}
 
                 <div className="adm-modal-actions">
                   <button type="button" className="adm-btn-outline" onClick={() => setIsModalOpen(false)}>Cancel</button>
