@@ -9,7 +9,7 @@ import HeroSection from '../components/HeroSection';
 import ProductCard from '../components/ProductCard';
 import FAQAccordion from '../components/FAQAccordion';
 import StatsSection from '../components/StatsSection';
-import { getFeaturedProducts } from '../data/products';
+import { getFeaturedProducts, type Product } from '../data/products';
 import { testimonials } from '../data/testimonials';
 import { faqs } from '../data/faqs';
 import './Home.css';
@@ -105,10 +105,14 @@ const services = [
   },
 ];
 
-const featuredProducts = getFeaturedProducts();
 const previewFaqs = faqs.slice(0, 5);
 
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
+
+  React.useEffect(() => {
+    setFeaturedProducts(getFeaturedProducts());
+  }, []);
   return (
     <main>
       {/* ===== HERO ===== */}

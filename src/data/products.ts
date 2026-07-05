@@ -17,7 +17,7 @@ export interface Product {
   isBestseller?: boolean;
 }
 
-export const products: Product[] = [
+const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'ls-1',
     name: 'SlimLine 3 Plus',
@@ -269,7 +269,6 @@ export const products: Product[] = [
     inStock: true,
     isNew: true,
   },
-  // Accessories
   {
     id: 'acc-1',
     name: 'Universal Scooter Cover',
@@ -322,6 +321,7 @@ export const products: Product[] = [
     features: ['Auto cut-off when full', 'LED charge indicator', 'Universal connector set', 'UK plug'],
     specs: { Voltage: '24V', Output: '5A', Connector: 'Universal adapters' },
     inStock: true,
+    isBestseller: true,
   },
   {
     id: 'acc-5',
@@ -351,8 +351,38 @@ export const products: Product[] = [
   },
 ];
 
-export const getProductsByCategory = (category: Product['category']) =>
-  products.filter((p) => p.category === category);
+export const loadProductsFromStorage = (): Product[] => {
+  if (typeof window === 'undefined') return INITIAL_PRODUCTS;
+  const stored = localStorage.getItem('cd_products');
+  if (!stored) {
+    localStorage.setItem('cd_products', JSON.stringify(INITIAL_PRODUCTS));
+    return INITIAL_PRODUCTS;
+  }
+  try {
+    return JSON.parse(stored);
+  } catch (e) {
+    return INITIAL_PRODUCTS;
+  }
+};
 
-export const getFeaturedProducts = () =>
-  products.filter((p) => p.isBestseller || p.isNew).slice(0, 6);
+export const saveProductsToStorage = (newProducts: Product[]) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('cd_products', JSON.stringify(newProducts));
+  }
+};
+
+// Initial load for live module binding
+export let products: Product[] = loadProductsFromStorage();
+
+export const refreshProducts = (): Product[] => {
+  products = loadProductsFromStorage();
+  return products;
+};
+
+export const getProductsByCategory = (category: Product['category']): Product[] => {
+  return loadProductsFromStorage().filter((p) => p.category === category);
+};
+
+export const getFeaturedProducts = (): Product[] => {
+  return loadProductsFromStorage().filter((p) => p.isBestseller || p.isNew).slice(0, 6);
+};

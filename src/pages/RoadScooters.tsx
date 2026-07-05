@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Compass, Gauge, Shield } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { getProductsByCategory } from '../data/products';
+import { getProductsByCategory, type Product } from '../data/products';
 import './ProductListPage.css';
 import './CategoryHighlights.css';
-
-const products = getProductsByCategory('road');
 
 const sortOptions = [
   { value: 'default', label: 'Featured' },
@@ -23,6 +21,11 @@ const highlights = [
 
 export default function RoadScooters() {
   const [sort, setSort] = useState('default');
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    setProducts(getProductsByCategory('road'));
+  }, []);
 
   const sorted = [...products].sort((a, b) => {
     if (sort === 'price-asc') return a.price - b.price;

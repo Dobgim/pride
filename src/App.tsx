@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -16,6 +16,8 @@ import Services from './pages/Services';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -40,6 +42,12 @@ function AnimatedRoutes() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
+          
+          {/* Admin routes */}
+          <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
@@ -59,12 +67,15 @@ function NotFound() {
 }
 
 export default function App() {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
+
   return (
     <>
-      <Navbar />
+      {!isAdmin && <Navbar />}
       <AnimatedRoutes />
-      <Footer />
-      <CartDrawer />
+      {!isAdmin && <Footer />}
+      {!isAdmin && <CartDrawer />}
     </>
   );
 }

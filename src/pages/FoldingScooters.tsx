@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Plane, Timer } from 'lucide-react';
+import { Plane, Star, Sparkles } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { getProductsByCategory } from '../data/products';
+import { getProductsByCategory, type Product } from '../data/products';
 import './ProductListPage.css';
-
-const products = getProductsByCategory('folding');
+import './CategoryHighlights.css';
 
 const sortOptions = [
   { value: 'default', label: 'Featured' },
@@ -15,13 +14,18 @@ const sortOptions = [
 ];
 
 const highlights = [
-  { icon: <Timer size={20} />, label: 'Folds in seconds', desc: 'One-button mechanism' },
-  { icon: <Package size={20} />, label: 'Suitcase-size storage', desc: 'Fits in tightest spaces' },
-  { icon: <Plane size={20} />, label: 'Airline-ready options', desc: 'Lithium battery models' },
+  { icon: <Sparkles size={20} />, label: 'Auto-folding', desc: 'Folds in under 15 seconds' },
+  { icon: <Plane size={20} />, label: 'Flight-approved', desc: 'Airline-safe lithium batteries' },
+  { icon: <Star size={20} />, label: 'Space saving', desc: 'Fits easily in car boot or closet' },
 ];
 
 export default function FoldingScooters() {
   const [sort, setSort] = useState('default');
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    setProducts(getProductsByCategory('folding'));
+  }, []);
 
   const sorted = [...products].sort((a, b) => {
     if (sort === 'price-asc') return a.price - b.price;
@@ -39,10 +43,10 @@ export default function FoldingScooters() {
             <span>/</span>
             <Link to="/mobility-scooters">Mobility Scooters</Link>
             <span>/</span>
-            <span>Folding</span>
+            <span>Folding Scooters</span>
           </nav>
           <h1>Folding Scooters</h1>
-          <p>The ultimate solution for travellers and those who need the most compact storage possible. Our folding scooters offer premium performance in an incredibly small package.</p>
+          <p>Compact, intelligent, and built for travel. Our selection of folding mobility scooters can be folded manually or automatically at the touch of a button.</p>
         </div>
       </div>
 

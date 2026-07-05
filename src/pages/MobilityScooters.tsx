@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, SlidersHorizontal } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { loadProductsFromStorage, type Product } from '../data/products';
 import './ProductListPage.css';
-
-const allScooters = products.filter(p => p.category !== 'accessory');
 
 const sortOptions = [
   { value: 'default', label: 'Featured' },
@@ -17,8 +15,15 @@ const sortOptions = [
 
 export default function MobilityScooters() {
   const [sort, setSort] = useState('default');
+  const [scooters, setScooters] = useState<Product[]>([]);
 
-  const sorted = [...allScooters].sort((a, b) => {
+  useEffect(() => {
+    // Load products on mount
+    const allProducts = loadProductsFromStorage();
+    setScooters(allProducts.filter(p => p.category !== 'accessory'));
+  }, []);
+
+  const sorted = [...scooters].sort((a, b) => {
     if (sort === 'price-asc') return a.price - b.price;
     if (sort === 'price-desc') return b.price - a.price;
     if (sort === 'rating') return b.rating - a.rating;

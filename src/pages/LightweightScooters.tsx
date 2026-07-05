@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Weight, Car, Zap } from 'lucide-react';
+import { Battery, Zap, ShieldAlert } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { getProductsByCategory } from '../data/products';
+import { getProductsByCategory, type Product } from '../data/products';
 import './ProductListPage.css';
 import './CategoryHighlights.css';
-
-const products = getProductsByCategory('lightweight');
 
 const sortOptions = [
   { value: 'default', label: 'Featured' },
@@ -16,13 +14,18 @@ const sortOptions = [
 ];
 
 const highlights = [
-  { icon: <Weight size={20} />, label: 'From just 19kg', desc: 'Easy to lift and carry' },
-  { icon: <Car size={20} />, label: 'Car boot friendly', desc: 'Disassembles in minutes' },
-  { icon: <Zap size={20} />, label: 'Up to 30km range', desc: 'Per full charge' },
+  { icon: <Zap size={20} />, label: 'Featherlight', desc: 'Disassembles into lightweight pieces' },
+  { icon: <Battery size={20} />, label: 'Up to 30km range', desc: 'Perfect for daily errands' },
+  { icon: <ShieldAlert size={20} />, label: 'Highly stable', desc: 'Engineered for safe turns' },
 ];
 
 export default function LightweightScooters() {
   const [sort, setSort] = useState('default');
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    setProducts(getProductsByCategory('lightweight'));
+  }, []);
 
   const sorted = [...products].sort((a, b) => {
     if (sort === 'price-asc') return a.price - b.price;
@@ -40,10 +43,10 @@ export default function LightweightScooters() {
             <span>/</span>
             <Link to="/mobility-scooters">Mobility Scooters</Link>
             <span>/</span>
-            <span>Lightweight</span>
+            <span>Lightweight Scooters</span>
           </nav>
           <h1>Lightweight Scooters</h1>
-          <p>Featherweight, fuss-free, and perfect for everyday life. Our lightweight scooters fold down quickly and fit in almost any car boot.</p>
+          <p>Easy to lift, dismantle, and transport. Our lightweight mobility scooters offer maximum portability without compromising on comfort or reliability.</p>
         </div>
       </div>
 
@@ -65,7 +68,6 @@ export default function LightweightScooters() {
         </div>
       </div>
 
-      {/* Category intro */}
       <div className="category-intro">
         <div className="container">
           <div className="lw-highlights">
