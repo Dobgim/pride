@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, ShoppingCart, Heart, Eye, BadgeCheck } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Eye, BadgeCheck, Play, X } from 'lucide-react';
 import type { Product } from '../data/products';
 import { useCart } from '../context/CartContext';
 import './ProductCard.css';
@@ -31,6 +31,7 @@ const badgeColors: Record<string, string> = {
 export default function ProductCard({ product, index = 0, showCategory = false }: ProductCardProps) {
   const { addItem } = useCart();
   const [currentImgIndex, setCurrentImgIndex] = React.useState(0);
+  const [showVideo, setShowVideo] = React.useState(false);
   
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -58,17 +59,55 @@ export default function ProductCard({ product, index = 0, showCategory = false }
     >
       {/* Image */}
       <div className="product-card-image">
-        <img
-          src={displayImage}
-          alt={product.name}
-          loading="lazy"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mobility_Scooter_-_HPIM1842.JPG';
-          }}
-        />
+        {showVideo && product.video ? (
+          <div className="product-card-video-wrap">
+            <video
+              src={product.video}
+              controls
+              autoPlay
+              playsInline
+              className="product-card-video"
+            />
+            <button
+              className="product-card-video-close"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowVideo(false);
+              }}
+              aria-label="Close video"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <img
+            src={displayImage}
+            alt={product.name}
+            loading="lazy"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mobility_Scooter_-_HPIM1842.JPG';
+            }}
+          />
+        )}
+
+        {/* Play button if a video is available */}
+        {product.video && !showVideo && (
+          <button
+            className="product-card-play-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowVideo(true);
+            }}
+            aria-label="Play product video"
+          >
+            <Play size={20} fill="currentColor" />
+          </button>
+        )}
 
         {/* Image dot navigation if multiple images */}
-        {productImages.length > 1 && (
+        {!showVideo && productImages.length > 1 && (
           <div className="product-card-img-dots">
             {productImages.map((_, idx) => (
               <button

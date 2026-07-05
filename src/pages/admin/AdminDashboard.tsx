@@ -138,6 +138,7 @@ export default function AdminDashboard() {
   const [inStock, setInStock] = useState(true);
   const [image, setImage] = useState('/images/folding_lightweight.png');
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+  const [video, setVideo] = useState('');
 
   // Load from Supabase
   const refreshProducts = async () => {
@@ -172,6 +173,7 @@ export default function AdminDashboard() {
     setInStock(true);
     setImage('/images/folding_lightweight.png');
     setAdditionalImages([]);
+    setVideo('');
     setIsModalOpen(true);
   };
 
@@ -187,6 +189,7 @@ export default function AdminDashboard() {
     setInStock(product.inStock);
     setImage(product.image);
     setAdditionalImages(product.images || []);
+    setVideo(product.video || '');
     setIsModalOpen(true);
   };
 
@@ -216,6 +219,30 @@ export default function AdminDashboard() {
       }
     }
     setLoading(false);
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Guard against oversized files — base64 in the DB gets very heavy.
+    const maxBytes = 25 * 1024 * 1024; // 25 MB
+    if (file.size > maxBytes) {
+      alert('Video is too large (max 25MB). Please upload a shorter clip, or paste a hosted video link instead.');
+      return;
+    }
+
+    setLoading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setVideo(reader.result as string);
+      setLoading(false);
+    };
+    reader.onerror = () => {
+      alert('Failed to read the video file. Please try again.');
+      setLoading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -248,6 +275,7 @@ export default function AdminDashboard() {
           downPayment: downPayment !== '' ? Number(downPayment) : undefined,
           image: mainImage,
           images: finalImages,
+          video: video || undefined,
           rating: 5.0,
           reviews: 1,
           badge: badge || undefined,
@@ -279,6 +307,7 @@ export default function AdminDashboard() {
           inStock,
           image: mainImage,
           images: finalImages,
+          video: video || undefined,
         };
 
         await updateProductInSupabase(updatedProduct);
@@ -1040,6 +1069,52 @@ export default function AdminDashboard() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="adm-field" style={{ gridColumn: 'span 2' }}>
+                    <label>Product Video <span style={{fontSize:11,color:'rgba(255,255,255,0.4)',fontWeight:400}}>(optional — shown on the website)</span></label>
+                    <div className="adm-photo-uploader">
+                      <label className="adm-photo-upload-btn">
+                        <Plus size={18} />
+                        <span>Upload Video from Phone</span>
+                        <input
+                          type="file"
+                          accept="video/*"
+                          onChange={handleVideoUpload}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+
+                      <div style={{ marginTop: 12, display: 'flex', gap: 12, flexDirection: 'column' }}>
+                        <span style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.4)' }}>
+                          or paste a video link (max 25MB for uploads):
+                        </span>
+                        <input
+                          type="text"
+                          value={video}
+                          onChange={e => setVideo(e.target.value)}
+                          placeholder="e.g. https://example.com/scooter-demo.mp4"
+                          className="adm-settings-input"
+                          style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)' }}
+                        />
+                      </div>
+
+                      {video && (
+                        <div className="adm-photo-preview-grid">
+                          <div className="adm-photo-preview-card primary" style={{ width: '100%', maxWidth: 320 }}>
+                            <video src={video} controls style={{ width: '100%', borderRadius: 8, display: 'block' }} />
+                            <button
+                              type="button"
+                              className="adm-photo-delete-btn"
+                              onClick={() => setVideo('')}
+                              title="Remove Video"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 

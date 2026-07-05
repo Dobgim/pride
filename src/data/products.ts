@@ -9,6 +9,7 @@ export interface Product {
   originalPrice?: number;
   image: string;
   images?: string[];
+  video?: string;
   rating: number;
   reviews: number;
   badge?: string;
@@ -34,6 +35,7 @@ export const mapDbProductToClient = (db: any): Product => ({
   originalPrice: db.original_price ? Number(db.original_price) : undefined,
   image: db.image,
   images: db.images || (db.specs && db.specs._images) || [],
+  video: db.video || (db.specs && db.specs._video) || undefined,
   rating: Number(db.rating),
   reviews: Number(db.reviews),
   badge: db.badge || undefined,
@@ -63,6 +65,7 @@ export const mapClientProductToDb = (p: Product) => {
     specs: {
       ...specsObj,
       _images: p.images || [],
+      _video: p.video || '',
     },
     in_stock: p.inStock,
     is_new: p.isNew || false,
