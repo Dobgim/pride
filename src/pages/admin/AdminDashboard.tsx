@@ -17,6 +17,45 @@ import {
 } from '../../data/products';
 import './AdminDashboard.css';
 
+/* ── Image Compressor Utility ── */
+const compressImage = (file: File, maxWidth = 800, maxHeight = 800): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        resolve(dataUrl);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 /* ── Auth guard ── */
 function useAdminGuard() {
   const navigate = useNavigate();
@@ -78,7 +117,7 @@ export default function AdminDashboard() {
   useAdminGuard();
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 767);
   const [searchQuery, setSearchQuery] = useState('');
   const [productList, setProductList] = useState<Product[]>([]);
   const [notifications] = useState(3);
@@ -97,6 +136,7 @@ export default function AdminDashboard() {
   const [badge, setBadge] = useState('');
   const [inStock, setInStock] = useState(true);
   const [image, setImage] = useState('/images/folding_lightweight.png');
+  const [additionalImages, setAdditionalImages] = useState<string[]>([]);
 
   // Load from Supabase
   const refreshProducts = async () => {
@@ -129,6 +169,7 @@ export default function AdminDashboard() {
     setBadge('');
     setInStock(true);
     setImage('/images/folding_lightweight.png');
+    setAdditionalImages([]);
     setIsModalOpen(true);
   };
 
@@ -142,7 +183,36 @@ export default function AdminDashboard() {
     setBadge(product.badge || '');
     setInStock(product.inStock);
     setImage(product.image);
+    setAdditionalImages(product.images || []);
     setIsModalOpen(true);
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    setLoading(true);
+    const uploadedUrls: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const base64Str = await compressImage(files[i]);
+        uploadedUrls.push(base64Str);
+      } catch (err) {
+        console.error('Error compressing image:', err);
+      }
+    }
+
+    if (uploadedUrls.length > 0) {
+      // The first image becomes the main image if the current main image is just a placeholder
+      if (image === '/images/folding_lightweight.png' || !image) {
+        setImage(uploadedUrls[0]);
+        setAdditionalImages(prev => [...prev, ...uploadedUrls.slice(1)]);
+      } else {
+        setAdditionalImages(prev => [...prev, ...uploadedUrls]);
+      }
+    }
+    setLoading(false);
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -162,6 +232,9 @@ export default function AdminDashboard() {
     setLoading(true);
     
     try {
+      const finalImages = [image, ...additionalImages].filter(Boolean);
+      const mainImage = finalImages[0] || '/images/folding_lightweight.png';
+
       if (modalMode === 'add') {
         const newId = `${category === 'lightweight' ? 'ls' : category === 'folding' ? 'fs' : category === 'road' ? 'rs' : 'acc'}-${Date.now()}`;
         const newProduct: Product = {
@@ -169,7 +242,8 @@ export default function AdminDashboard() {
           name,
           category,
           price: Number(price),
-          image: image || (category === 'road' ? '/images/enclosed_cabin.png' : category === 'accessory' ? 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80' : '/images/folding_lightweight.png'),
+          image: mainImage,
+          images: finalImages,
           rating: 5.0,
           reviews: 1,
           badge: badge || undefined,
@@ -198,7 +272,8 @@ export default function AdminDashboard() {
           shortDesc: description,
           badge: badge || undefined,
           inStock,
-          image,
+          image: mainImage,
+          images: finalImages,
         };
 
         await updateProductInSupabase(updatedProduct);
@@ -252,7 +327,12 @@ export default function AdminDashboard() {
               <button
                 key={item.id}
                 className={`adm-nav-item ${activeNav === item.id ? 'active' : ''}`}
-                onClick={() => setActiveNav(item.id)}
+                onClick={() => {
+                  setActiveNav(item.id);
+                  if (window.innerWidth < 768) {
+                    setSidebarOpen(false);
+                  }
+                }}
                 title={!sidebarOpen ? item.label : undefined}
               >
                 <Icon size={18} />
@@ -268,6 +348,14 @@ export default function AdminDashboard() {
           {sidebarOpen && <span>Logout</span>}
         </button>
       </aside>
+
+      {/* Mobile Sidebar Backdrop */}
+      {sidebarOpen && (
+        <div 
+          className="adm-sidebar-backdrop" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* ── Main content ── */}
       <div className="adm-main">
@@ -819,15 +907,95 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <div className="adm-field">
-                    <label>Image URL</label>
-                    <input
-                      type="text"
-                      value={image}
-                      onChange={e => setImage(e.target.value)}
-                      placeholder="e.g. /images/enclosed_cabin.png"
-                      required
-                    />
+                  <div className="adm-field" style={{ gridColumn: 'span 2' }}>
+                    <label>Product Photos</label>
+                    <div className="adm-photo-uploader">
+                      {/* Hidden File Input styled as a button */}
+                      <label className="adm-photo-upload-btn">
+                        <Plus size={18} />
+                        <span>Upload Photos from Phone</span>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={handlePhotoUpload}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                      
+                      <div style={{ marginTop: 12, display: 'flex', gap: 12, flexDirection: 'column' }}>
+                        <span style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.4)' }}>
+                          or paste primary image link:
+                        </span>
+                        <input
+                          type="text"
+                          value={image}
+                          onChange={e => setImage(e.target.value)}
+                          placeholder="e.g. https://images.unsplash.com/..."
+                          className="adm-settings-input"
+                          style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)' }}
+                        />
+                      </div>
+
+                      {/* Preview Grid */}
+                      <div className="adm-photo-preview-grid">
+                        {/* Primary Image */}
+                        {image && (
+                          <div className="adm-photo-preview-card primary">
+                            <img src={image} alt="Primary" />
+                            <span className="adm-photo-badge">Primary</span>
+                            <button
+                              type="button"
+                              className="adm-photo-delete-btn"
+                              onClick={() => {
+                                if (additionalImages.length > 0) {
+                                  setImage(additionalImages[0]);
+                                  setAdditionalImages(prev => prev.slice(1));
+                                } else {
+                                  setImage('');
+                                }
+                              }}
+                              title="Delete Photo"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Additional Images */}
+                        {additionalImages.map((img, idx) => (
+                          <div key={idx} className="adm-photo-preview-card">
+                            <img src={img} alt={`Preview ${idx + 1}`} />
+                            <div className="adm-photo-card-actions">
+                              <button
+                                type="button"
+                                className="adm-photo-action-link"
+                                onClick={() => {
+                                  // Swap primary and this image
+                                  const currentPrimary = image;
+                                  setImage(img);
+                                  setAdditionalImages(prev =>
+                                    prev.map((item, i) => (i === idx ? currentPrimary : item))
+                                  );
+                                }}
+                              >
+                                Set Primary
+                              </button>
+                              <button
+                                type="button"
+                                className="adm-photo-delete-btn"
+                                onClick={() => {
+                                  setAdditionalImages(prev => prev.filter((_, i) => i !== idx));
+                                }}
+                                title="Delete Photo"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   <div className="adm-field adm-field-checkbox">

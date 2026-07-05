@@ -30,6 +30,8 @@ const badgeColors: Record<string, string> = {
 
 export default function ProductCard({ product, index = 0, showCategory = false }: ProductCardProps) {
   const { addItem } = useCart();
+  const [currentImgIndex, setCurrentImgIndex] = React.useState(0);
+  
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;
@@ -43,6 +45,9 @@ export default function ProductCard({ product, index = 0, showCategory = false }
       ? '/folding-scooters'
       : '/road-scooters';
 
+  const productImages = product.images && product.images.length > 0 ? product.images : [product.image];
+  const displayImage = productImages[currentImgIndex] || product.image;
+
   return (
     <motion.article
       className="product-card card"
@@ -54,13 +59,31 @@ export default function ProductCard({ product, index = 0, showCategory = false }
       {/* Image */}
       <div className="product-card-image">
         <img
-          src={product.image}
+          src={displayImage}
           alt={product.name}
           loading="lazy"
           onError={(e) => {
             (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mobility_Scooter_-_HPIM1842.JPG';
           }}
         />
+
+        {/* Image dot navigation if multiple images */}
+        {productImages.length > 1 && (
+          <div className="product-card-img-dots">
+            {productImages.map((_, idx) => (
+              <button
+                key={idx}
+                className={`product-card-img-dot ${idx === currentImgIndex ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImgIndex(idx);
+                }}
+                aria-label={`View image ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Badges */}
         <div className="product-card-badges">

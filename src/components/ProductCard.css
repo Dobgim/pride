@@ -226,3 +226,38 @@
   background: var(--color-danger);
   display: inline-block;
 }
+
+/* Image Dots for Multiple Photos */
+.product-card-img-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+
+.product-card-img-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.product-card-img-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.product-card-img-dot.active {
+  background: var(--color-accent);
+  transform: scale(1.2);
+}

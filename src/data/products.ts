@@ -31,6 +31,7 @@ export const mapDbProductToClient = (db: any): Product => ({
   price: Number(db.price),
   originalPrice: db.original_price ? Number(db.original_price) : undefined,
   image: db.image,
+  images: db.images || (db.specs && db.specs._images) || [],
   rating: Number(db.rating),
   reviews: Number(db.reviews),
   badge: db.badge || undefined,
@@ -42,23 +43,29 @@ export const mapDbProductToClient = (db: any): Product => ({
   isBestseller: db.is_bestseller,
 });
 
-export const mapClientProductToDb = (p: Product) => ({
-  id: p.id,
-  name: p.name,
-  category: p.category,
-  price: p.price,
-  original_price: p.originalPrice || null,
-  image: p.image,
-  rating: p.rating,
-  reviews: p.reviews,
-  badge: p.badge || null,
-  short_desc: p.shortDesc,
-  features: p.features,
-  specs: p.specs,
-  in_stock: p.inStock,
-  is_new: p.isNew || false,
-  is_bestseller: p.isBestseller || false,
-});
+export const mapClientProductToDb = (p: Product) => {
+  const specsObj = p.specs || {};
+  return {
+    id: p.id,
+    name: p.name,
+    category: p.category,
+    price: p.price,
+    original_price: p.originalPrice || null,
+    image: p.image,
+    rating: p.rating,
+    reviews: p.reviews,
+    badge: p.badge || null,
+    short_desc: p.shortDesc,
+    features: p.features,
+    specs: {
+      ...specsObj,
+      _images: p.images || [],
+    },
+    in_stock: p.inStock,
+    is_new: p.isNew || false,
+    is_bestseller: p.isBestseller || false,
+  };
+};
 
 // ── Supabase CRUD ────────────────────────────────────────────────────────────
 
