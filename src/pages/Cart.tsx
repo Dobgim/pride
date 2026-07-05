@@ -223,6 +223,43 @@ export default function Cart() {
                 </label>
               </div>
 
+              {/* ── Accepted Payment Methods ── */}
+              <div className="cart-payment-methods">
+                <div className="cart-payment-methods-label">We Accept</div>
+                <div className="cart-payment-methods-icons">
+                  {/* Zelle */}
+                  <div className="cart-pay-badge" title="Zelle">
+                    <svg viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="52" height="22">
+                      <rect width="60" height="24" rx="5" fill="#6D1ED4"/>
+                      <text x="30" y="16.5" textAnchor="middle" fill="white" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="12" letterSpacing="0.5">Zelle</text>
+                    </svg>
+                  </div>
+                  {/* Cash App */}
+                  <div className="cart-pay-badge" title="Cash App">
+                    <svg viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="52" height="22">
+                      <rect width="60" height="24" rx="5" fill="#00D54B"/>
+                      <text x="30" y="16.5" textAnchor="middle" fill="white" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="10" letterSpacing="0.3">Cash App</text>
+                    </svg>
+                  </div>
+                  {/* Chime */}
+                  <div className="cart-pay-badge" title="Chime">
+                    <svg viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="52" height="22">
+                      <rect width="60" height="24" rx="5" fill="#1EC677"/>
+                      <text x="30" y="16.5" textAnchor="middle" fill="white" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="11" letterSpacing="0.3">Chime</text>
+                    </svg>
+                  </div>
+                  {/* Apple Pay */}
+                  <div className="cart-pay-badge" title="Apple Pay">
+                    <svg viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="52" height="22">
+                      <rect width="60" height="24" rx="5" fill="#000000"/>
+                      <text x="30" y="16.5" textAnchor="middle" fill="white" fontFamily="Arial,sans-serif" fontWeight="700" fontSize="10" letterSpacing="0.2"> Pay</text>
+                      <text x="22" y="16.5" textAnchor="middle" fill="white" fontFamily="-apple-system,sans-serif" fontWeight="700" fontSize="11"></text>
+                      <path d="M18 8.5c.6-.7 1-1.6.9-2.5-.9.1-2 .6-2.6 1.3-.5.6-1 1.5-.9 2.4.9.1 1.9-.4 2.6-1.2zM18.9 9.8c-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-2.9-.7-1.5.0-2.8.9-3.6 2.2-1.5 2.6-.4 6.5 1.1 8.6.7 1 1.6 2.2 2.7 2.2 1.1 0 1.5-.7 2.8-.7 1.3 0 1.6.7 2.8.7 1.1 0 1.9-1 2.7-2 .8-1.2 1.2-2.3 1.2-2.3 0 0-2.3-.9-2.3-3.4 0-2.2 1.8-3.2 1.8-3.2-.9-1.4-2.5-1.2-2.9-1.2z" fill="white" transform="translate(10, -6) scale(0.7)"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
               {/* Checkout button */}
               <button
                 className="btn btn-accent btn-lg w-full"
