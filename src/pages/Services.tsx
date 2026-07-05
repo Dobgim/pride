@@ -8,7 +8,7 @@ const services = [
   {
     icon: <Wrench size={28} />,
     title: 'Annual Service & Safety Check',
-    price: 'From £79',
+    price: 'From $79',
     duration: 'Approx. 2 hours',
     description: 'Our comprehensive annual service is designed to keep your scooter performing safely and reliably throughout the year.',
     includes: [
@@ -25,7 +25,7 @@ const services = [
   {
     icon: <Battery size={28} />,
     title: 'Battery Replacement Service',
-    price: 'From £49 + battery cost',
+    price: 'From $49 + battery cost',
     duration: 'Same-day in most cases',
     description: 'Is your scooter not holding its charge as well as it used to? Our technicians will diagnose your battery health and replace it with a genuine part.',
     includes: [
@@ -40,11 +40,11 @@ const services = [
   {
     icon: <Home size={28} />,
     title: 'Mobile Home Visit Service',
-    price: 'From £35 call-out + parts',
+    price: 'From $35 call-out + parts',
     duration: 'Flexible scheduling',
     description: 'Can\'t get to us? No problem. Our mobile technicians come directly to your home and carry out most repairs on-site.',
     includes: [
-      'Nationwide coverage across the UK',
+      'Nationwide coverage across the US',
       'Fully equipped service van',
       'Most common parts carried in stock',
       'Flexible appointment times',
@@ -55,7 +55,7 @@ const services = [
   {
     icon: <Gauge size={28} />,
     title: 'Diagnostics & Repair',
-    price: 'From £35 diagnostic fee',
+    price: 'From $35 diagnostic fee',
     duration: 'Varies by repair',
     description: 'Got a fault light, strange noise, or performance issue? Our technicians will diagnose and fix the problem quickly and affordably.',
     includes: [
@@ -72,14 +72,14 @@ const services = [
 const plans = [
   {
     name: 'Basic Care',
-    price: '£9.99/mo',
+    price: '$9.99/mo',
     description: 'Entry-level protection for peace of mind',
     features: ['Annual service included', 'Labour costs covered', '10% discount on parts', 'Priority booking'],
     highlight: false,
   },
   {
     name: 'Complete Care',
-    price: '£19.99/mo',
+    price: '$19.99/mo',
     description: 'Our most popular full-coverage plan',
     features: ['Annual service included', 'All labour & parts covered', 'Free call-out', 'Priority same-day booking', 'Courtesy scooter available', '24/7 breakdown helpline'],
     highlight: true,
@@ -87,7 +87,7 @@ const plans = [
   },
   {
     name: 'Premium Cover',
-    price: '£29.99/mo',
+    price: '$29.99/mo',
     description: 'The ultimate protection package',
     features: ['Annual service included', 'All labour & parts covered', 'Free call-out', 'Priority same-day booking', 'Courtesy scooter guaranteed', '24/7 breakdown helpline', 'Battery replacement included', 'Accident damage cover'],
     highlight: false,
@@ -101,7 +101,7 @@ export default function Services() {
         <div className="container page-hero-content">
           <nav className="breadcrumb"><Link to="/">Home</Link><span>/</span><span>Services &amp; Repairs</span></nav>
           <h1>Services &amp; Repairs</h1>
-          <p>Expert care for your mobility scooter — from routine annual servicing to emergency repairs and battery replacement, all across the UK.</p>
+          <p>Expert care for your mobility scooter — from routine annual servicing to emergency repairs and battery replacement, all across the US.</p>
         </div>
       </div>
 
@@ -113,7 +113,7 @@ export default function Services() {
               { icon: <ShieldCheck size={18} />, text: '90-day labour warranty on all repairs' },
               { icon: <Star size={18} />, text: '4.9 star rated service' },
               { icon: <Home size={18} />, text: 'We come to you — free home visits' },
-              { icon: <Phone size={18} />, text: '7-day support: 0800 123 4567' },
+              { icon: <Phone size={18} />, text: '7-day support: 1-800-555-0199' },
             ].map(item => (
               <div key={item.text} className="trust-strip-item">
                 <div className="trust-strip-icon">{item.icon}</div>
@@ -225,7 +225,7 @@ export default function Services() {
           <p style={{ color: 'var(--color-gray-500)', marginBottom: 28 }}>Call us or use the contact form and one of our team will arrange a convenient time for you.</p>
           <div className="flex-center gap-3">
             <Link to="/contact" className="btn btn-accent btn-lg">Book Online <ArrowRight size={16} /></Link>
-            <a href="tel:08001234567" className="btn btn-outline btn-lg"><Phone size={16} /> 0800 123 4567</a>
+            <a href="tel:18005550199" className="btn btn-outline btn-lg"><Phone size={16} /> 1-800-555-0199</a>
           </div>
         </div>
       </section>

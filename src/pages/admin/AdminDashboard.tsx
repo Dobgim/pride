@@ -29,20 +29,20 @@ function useAdminGuard() {
 
 /* ── Mock statistics & data ── */
 const statsData = [
-  { label: 'Total Revenue', value: '£184,320', change: '+12.4%', up: true, icon: DollarSign, color: '#10b981' },
+  { label: 'Total Revenue', value: '$184,320', change: '+12.4%', up: true, icon: DollarSign, color: '#10b981' },
   { label: 'Orders This Month', value: '347', change: '+8.1%', up: true, icon: ShoppingCart, color: '#3b82f6' },
   { label: 'Active Customers', value: '2,841', change: '+5.3%', up: true, icon: Users, color: '#8b5cf6' },
-  { label: 'Avg. Order Value', value: '£531', change: '-2.1%', up: false, icon: TrendingUp, color: '#f59e0b' },
+  { label: 'Avg. Order Value', value: '$531', change: '-2.1%', up: false, icon: TrendingUp, color: '#f59e0b' },
 ];
 
 const recentOrders = [
-  { id: '#ORD-8821', customer: 'Margaret Thompson', product: 'RoadMaster 8', amount: '£2,499', status: 'Delivered', date: '04 Jul 2025' },
-  { id: '#ORD-8820', customer: 'Robert Davies', product: 'FoldPro Ultra', amount: '£1,499', status: 'Shipped', date: '04 Jul 2025' },
-  { id: '#ORD-8819', customer: 'Helen Okafor', product: 'SlimLine 3 Plus', amount: '£899', status: 'Processing', date: '03 Jul 2025' },
-  { id: '#ORD-8818', customer: 'James Whitfield', product: 'CrossCountry 6+', amount: '£1,999', status: 'Delivered', date: '03 Jul 2025' },
-  { id: '#ORD-8817', customer: 'Patricia Lawson', product: 'TravelLite 4', amount: '£1,149', status: 'Pending', date: '02 Jul 2025' },
-  { id: '#ORD-8816', customer: 'Thomas Briggs', product: 'Terrain Pro 4WD', amount: '£2,999', status: 'Delivered', date: '02 Jul 2025' },
-  { id: '#ORD-8815', customer: 'Susan Clarke', product: 'EasyGo S3', amount: '£749', status: 'Shipped', date: '01 Jul 2025' },
+  { id: '#ORD-8821', customer: 'Margaret Thompson', product: 'RoadMaster 8', amount: '$2,499', status: 'Delivered', date: '04 Jul 2025' },
+  { id: '#ORD-8820', customer: 'Robert Davies', product: 'FoldPro Ultra', amount: '$1,499', status: 'Shipped', date: '04 Jul 2025' },
+  { id: '#ORD-8819', customer: 'Helen Okafor', product: 'SlimLine 3 Plus', amount: '$899', status: 'Processing', date: '03 Jul 2025' },
+  { id: '#ORD-8818', customer: 'James Whitfield', product: 'CrossCountry 6+', amount: '$1,999', status: 'Delivered', date: '03 Jul 2025' },
+  { id: '#ORD-8817', customer: 'Patricia Lawson', product: 'TravelLite 4', amount: '$1,149', status: 'Pending', date: '02 Jul 2025' },
+  { id: '#ORD-8816', customer: 'Thomas Briggs', product: 'Terrain Pro 4WD', amount: '$2,999', status: 'Delivered', date: '02 Jul 2025' },
+  { id: '#ORD-8815', customer: 'Susan Clarke', product: 'EasyGo S3', amount: '$749', status: 'Shipped', date: '01 Jul 2025' },
 ];
 
 const weeklyRevenue = [62, 85, 74, 91, 88, 110, 97];
@@ -66,12 +66,12 @@ const navItems = [
 ];
 
 const initialCustomers = [
-  { name: 'Margaret Thompson', email: 'margaret.t@email.com', orders: 3, spent: '£6,241', joined: 'Jan 2024', status: 'Active' },
-  { name: 'Robert Davies', email: 'r.davies@email.com', orders: 1, spent: '£1,499', joined: 'Mar 2025', status: 'Active' },
-  { name: 'Helen Okafor', email: 'helen.ok@email.com', orders: 2, spent: '£2,348', joined: 'Jun 2024', status: 'Active' },
-  { name: 'James Whitfield', email: 'jwhitfield@email.com', orders: 4, spent: '£8,112', joined: 'Nov 2023', status: 'VIP' },
-  { name: 'Patricia Lawson', email: 'p.lawson@email.com', orders: 1, spent: '£1,149', joined: 'Jun 2025', status: 'New' },
-  { name: 'Thomas Briggs', email: 'tom.briggs@email.com', orders: 2, spent: '£4,998', joined: 'Feb 2024', status: 'Active' },
+  { name: 'Margaret Thompson', email: 'margaret.t@email.com', orders: 3, spent: '$6,241', joined: 'Jan 2024', status: 'Active' },
+  { name: 'Robert Davies', email: 'r.davies@email.com', orders: 1, spent: '$1,499', joined: 'Mar 2025', status: 'Active' },
+  { name: 'Helen Okafor', email: 'helen.ok@email.com', orders: 2, spent: '$2,348', joined: 'Jun 2024', status: 'Active' },
+  { name: 'James Whitfield', email: 'jwhitfield@email.com', orders: 4, spent: '$8,112', joined: 'Nov 2023', status: 'VIP' },
+  { name: 'Patricia Lawson', email: 'p.lawson@email.com', orders: 1, spent: '$1,149', joined: 'Jun 2025', status: 'New' },
+  { name: 'Thomas Briggs', email: 'tom.briggs@email.com', orders: 2, spent: '$4,998', joined: 'Feb 2024', status: 'Active' },
 ];
 
 export default function AdminDashboard() {
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
           features: ['Premium Quality', 'Care Drive Approved'],
           specs: {
             Category: category,
-            Price: `£${price}`,
+            Price: `$${price}`,
           },
           inStock,
           isNew: true,
@@ -555,7 +555,7 @@ export default function AdminDashboard() {
                                 {p.badge && <span className="adm-product-badge">{p.badge}</span>}
                               </td>
                               <td className="adm-td-cap">{p.category}</td>
-                              <td className="adm-td-bold">£{p.price.toLocaleString()}</td>
+                              <td className="adm-td-bold">${p.price.toLocaleString()}</td>
                               <td>
                                 <div className="adm-rating">
                                   <Star size={13} fill="#f59e0b" color="#f59e0b" />
@@ -675,7 +675,7 @@ export default function AdminDashboard() {
                     <div className="adm-bar-chart adm-bar-chart-lg">
                       {weeklyRevenue.map((val, i) => (
                         <div key={i} className="adm-bar-col">
-                          <div className="adm-bar-val">£{val}k</div>
+                          <div className="adm-bar-val">${val}k</div>
                           <div className="adm-bar-wrap">
                             <motion.div
                               className="adm-bar"
@@ -711,7 +711,7 @@ export default function AdminDashboard() {
                       </div>
                       <div className="adm-settings-field">
                         <label>Email</label>
-                        <input type="email" defaultValue="admin@caredrivemobility.co.uk" className="adm-settings-input" />
+                        <input type="email" defaultValue="caredriveenclosedmobility@gmail.com" className="adm-settings-input" />
                       </div>
                       <button className="adm-btn-primary" style={{ marginTop: 8 }}>Save Changes</button>
                     </div>
@@ -723,11 +723,11 @@ export default function AdminDashboard() {
                       </div>
                       <div className="adm-settings-field">
                         <label>Currency</label>
-                        <input type="text" defaultValue="GBP (£)" className="adm-settings-input" />
+                        <input type="text" defaultValue="USD ($)" className="adm-settings-input" />
                       </div>
                       <div className="adm-settings-field">
                         <label>Free Delivery Threshold</label>
-                        <input type="text" defaultValue="£500" className="adm-settings-input" />
+                        <input type="text" defaultValue="$500" className="adm-settings-input" />
                       </div>
                       <button className="adm-btn-primary" style={{ marginTop: 8 }}>Save Changes</button>
                     </div>
@@ -798,7 +798,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="adm-field">
-                    <label>Price (£)</label>
+                    <label>Price ($)</label>
                     <input
                       type="number"
                       value={price}

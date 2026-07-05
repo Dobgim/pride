@@ -310,6 +310,8 @@
   top: 0;
   right: 0;
   bottom: 0;
+  height: 100%;
+  height: 100dvh;
   width: min(380px, 100vw);
   background: var(--color-white);
   z-index: 600;
@@ -324,6 +326,7 @@
   justify-content: space-between;
   padding: 20px 24px;
   border-bottom: 1px solid var(--color-gray-100);
+  flex-shrink: 0;
 }
 
 .mobile-menu-header button {
@@ -342,6 +345,7 @@
 .mobile-menu-body {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 12px 16px;
 }
 
@@ -398,6 +402,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex-shrink: 0;
 }
 
 .mobile-contact-info {

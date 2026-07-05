@@ -7,7 +7,7 @@ import './Cart.css';
 
 const trustItems = [
   { icon: <ShieldCheck size={16} />, text: 'Secure Checkout' },
-  { icon: <Truck size={16} />, text: 'Free UK Delivery over £500' },
+  { icon: <Truck size={16} />, text: 'Free US Delivery over $500' },
   { icon: <RotateCcw size={16} />, text: '14-Day Returns' },
 ];
 
@@ -83,7 +83,7 @@ export default function Cart() {
                       </div>
                       <div className="cart-page-details">
                         <div className="cart-page-name">{item.product.name}</div>
-                        <div className="cart-page-unit-price">£{item.product.price.toLocaleString()} each</div>
+                        <div className="cart-page-unit-price">${item.product.price.toLocaleString()} each</div>
                         {item.product.inStock && (
                           <div className="cart-page-stock">
                             <span className="stock-dot" /> In stock
@@ -107,7 +107,7 @@ export default function Cart() {
                     </div>
 
                     <div className="cart-page-total">
-                      £{(item.product.price * item.quantity).toLocaleString()}
+                      ${(item.product.price * item.quantity).toLocaleString()}
                     </div>
                   </motion.div>
                 ))}
@@ -130,25 +130,25 @@ export default function Cart() {
               <div className="cart-summary-rows">
                 <div className="cart-summary-row">
                   <span>Subtotal</span>
-                  <span>£{total.toLocaleString()}</span>
+                  <span>${total.toLocaleString()}</span>
                 </div>
                 <div className="cart-summary-row">
-                  <span>UK Delivery</span>
+                  <span>US Delivery</span>
                   <span className={delivery === 0 ? 'free-delivery' : ''}>
-                    {delivery === 0 ? 'FREE' : `£${delivery.toFixed(2)}`}
+                    {delivery === 0 ? 'FREE' : `$${delivery.toFixed(2)}`}
                   </span>
                 </div>
                 {delivery === 0 && (
                   <div className="cart-delivery-note">
-                    <Truck size={13} /> Free delivery applied (orders over £500)
+                    <Truck size={13} /> Free delivery applied (orders over $500)
                   </div>
                 )}
                 <div className="cart-summary-divider" />
                 <div className="cart-summary-row cart-summary-total">
-                  <span>Total (inc. VAT)</span>
-                  <span>£{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span>Total</span>
+                  <span>${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
-                <div className="cart-vat-breakdown">VAT (20%) included: £{vat.toFixed(2)}</div>
+                <div className="cart-vat-breakdown">Sales tax exempt for medical needs</div>
               </div>
 
               <button className="btn btn-accent btn-lg w-full" style={{ justifyContent: 'center' }}>
@@ -176,7 +176,7 @@ export default function Cart() {
               </div>
 
               <div className="cart-help">
-                Need help? <a href="tel:08001234567">Call 0800 123 4567</a>
+                Need help? <a href="tel:18005550199">Call 1-800-555-0199</a>
               </div>
             </aside>
           </div>

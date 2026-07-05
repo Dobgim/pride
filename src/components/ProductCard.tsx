@@ -124,9 +124,9 @@ export default function ProductCard({ product, index = 0, showCategory = false }
         {/* Price & CTA */}
         <div className="product-card-footer">
           <div className="product-price">
-            <span className="price-current">£{product.price.toLocaleString()}</span>
+            <span className="price-current">${product.price.toLocaleString()}</span>
             {product.originalPrice && (
-              <span className="price-original">£{product.originalPrice.toLocaleString()}</span>
+              <span className="price-original">${product.originalPrice.toLocaleString()}</span>
             )}
           </div>
           <button

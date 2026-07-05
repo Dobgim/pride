@@ -42,8 +42,8 @@ export default function Footer() {
               <Link to="/contact" className="btn btn-white">
                 Get Free Advice <ArrowRight size={16} />
               </Link>
-              <a href="tel:08001234567" className="btn btn-outline" style={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)' }}>
-                <Phone size={16} /> 0800 123 4567
+              <a href="tel:18005550199" className="btn btn-outline" style={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)' }}>
+                <Phone size={16} /> 1-800-555-0199
               </a>
             </div>
           </div>
@@ -66,20 +66,20 @@ export default function Footer() {
                 </div>
               </div>
               <p className="footer-tagline">
-                Helping people stay independent, active, and mobile for over 20 years. Trusted by thousands of customers across the UK.
+                Helping people stay independent, active, and mobile for over 20 years. Trusted by thousands of customers across the US.
               </p>
               <div className="footer-contact-items">
-                <a href="tel:08001234567" className="footer-contact-item">
+                <a href="tel:18005550199" className="footer-contact-item">
                   <Phone size={14} />
-                  <span>0800 123 4567</span>
+                  <span>1-800-555-0199</span>
                 </a>
-                <a href="mailto:info@caredrivemobility.co.uk" className="footer-contact-item">
+                <a href="mailto:caredriveenclosedmobility@gmail.com" className="footer-contact-item">
                   <Mail size={14} />
-                  <span>info@caredrivemobility.co.uk</span>
+                  <span>caredriveenclosedmobility@gmail.com</span>
                 </a>
                 <div className="footer-contact-item">
                   <MapPin size={14} />
-                  <span>Units 1–4 Mobility House, Leeds LS1 4BR</span>
+                  <span>123 Mobility Way, Suite 100, Austin, TX 78701</span>
                 </div>
               </div>
               <div className="footer-social">
@@ -137,7 +137,7 @@ export default function Footer() {
       <div className="footer-bottom">
         <div className="container">
           <div className="footer-bottom-inner">
-            <p>&copy; {new Date().getFullYear()} Care Drive Enclosed Mobility Ltd. All rights reserved. Registered in England & Wales No. 12345678.</p>
+            <p>&copy; 2022 Care Drive Enclosed Mobility LLC. All rights reserved.</p>
             <div className="footer-bottom-links">
               <a href="#">Privacy Policy</a>
               <span>|</span>

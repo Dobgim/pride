@@ -36,8 +36,8 @@ export default function FAQ() {
               <div className="faq-sidebar-card">
                 <h3>Still have a question?</h3>
                 <p>Our friendly team of mobility specialists are available 7 days a week to help you find the right scooter and answer any question you may have.</p>
-                <a href="tel:08001234567" className="btn btn-primary w-full" style={{ justifyContent: 'center' }}>
-                  Call 0800 123 4567
+                <a href="tel:18005550199" className="btn btn-primary w-full" style={{ justifyContent: 'center' }}>
+                  Call 1-800-555-0199
                 </a>
                 <Link to="/contact" className="btn btn-outline w-full" style={{ justifyContent: 'center' }}>
                   Send a Message <ArrowRight size={15} />

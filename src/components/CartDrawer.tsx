@@ -69,7 +69,7 @@ export default function CartDrawer() {
                       </div>
                       <div className="cart-item-details">
                         <div className="cart-item-name">{item.product.name}</div>
-                        <div className="cart-item-price">£{item.product.price.toLocaleString()}</div>
+                        <div className="cart-item-price">${item.product.price.toLocaleString()}</div>
                         <div className="cart-item-controls">
                           <div className="qty-control">
                             <button
@@ -96,7 +96,7 @@ export default function CartDrawer() {
                         </div>
                       </div>
                       <div className="cart-item-total">
-                        £{(item.product.price * item.quantity).toLocaleString()}
+                        ${(item.product.price * item.quantity).toLocaleString()}
                       </div>
                     </motion.li>
                   ))}
@@ -109,9 +109,9 @@ export default function CartDrawer() {
               <div className="cart-footer">
                 <div className="cart-subtotal">
                   <span>Subtotal</span>
-                  <span className="subtotal-amount">£{total.toLocaleString()}</span>
+                  <span className="subtotal-amount">${total.toLocaleString()}</span>
                 </div>
-                <p className="cart-vat-note">VAT included where applicable. Free UK delivery on orders over £500.</p>
+                <p className="cart-vat-note">Sales tax exempt in most states. Free US delivery on orders over $500.</p>
                 <Link
                   to="/cart"
                   className="btn btn-primary w-full"

@@ -77,13 +77,13 @@ export default function Navbar() {
         <div className="container">
           <div className="navbar-topbar-inner">
             <div className="navbar-topbar-left">
-              <span>Free UK Delivery on orders over £500</span>
+              <span>Free US Delivery on orders over $500</span>
               <span className="topbar-dot">•</span>
-              <span>VAT-free for eligible customers</span>
+              <span>Sales tax exempt in most states</span>
             </div>
             <div className="navbar-topbar-right">
               <Phone size={13} />
-              <span>0800 123 4567</span>
+              <span>1-800-555-0199</span>
               <span className="topbar-dot">•</span>
               <span>Mon–Sat 9am–6pm</span>
             </div>
@@ -275,7 +275,7 @@ export default function Navbar() {
                 <div className="mobile-contact-info">
                   <Phone size={16} />
                   <div>
-                    <div className="mobile-phone">0800 123 4567</div>
+                    <div className="mobile-phone">1-800-555-0199</div>
                     <div className="mobile-hours">Mon–Sat 9am–6pm</div>
                   </div>
                 </div>

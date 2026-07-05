@@ -52,12 +52,12 @@ const whyUsItems = [
   },
   {
     icon: <Truck size={28} />,
-    title: 'Free UK Home Delivery',
-    desc: 'Free delivery on all scooters over £500. Our team will set it up in your home and demonstrate it for you.',
+    title: 'Free US Home Delivery',
+    desc: 'Free delivery on all scooters over $500. Our team will set it up in your home and demonstrate it for you.',
   },
   {
     icon: <Headphones size={28} />,
-    title: 'Expert UK Support',
+    title: 'Expert US Support',
     desc: 'Our mobility specialists are available 7 days a week to answer any question — before and after purchase.',
   },
   {
@@ -68,7 +68,7 @@ const whyUsItems = [
   {
     icon: <Wrench size={28} />,
     title: 'Nationwide Servicing',
-    desc: 'Our mobile technicians cover the whole UK. Annual service plans available to keep your scooter in top shape.',
+    desc: 'Our mobile technicians cover the whole US. Annual service plans available to keep your scooter in top shape.',
   },
   {
     icon: <Award size={28} />,
@@ -78,10 +78,10 @@ const whyUsItems = [
 ];
 
 const stats = [
-  { value: 20000, suffix: '+', label: 'Happy Customers', description: 'Across the UK since 2004' },
+  { value: 20000, suffix: '+', label: 'Happy Customers', description: 'Across the US since 2004' },
   { value: 50, suffix: '+', label: 'Models Available', description: 'For every lifestyle & budget' },
   { value: 98, suffix: '%', label: 'Satisfaction Rate', description: 'Based on verified reviews' },
-  { value: 20, suffix: ' Yrs', label: 'Experience', description: 'UK mobility experts' },
+  { value: 20, suffix: ' Yrs', label: 'Experience', description: 'US mobility experts' },
 ];
 
 const services = [
@@ -89,19 +89,19 @@ const services = [
     icon: <Wrench size={24} />,
     title: 'Annual Service & MOT',
     desc: 'Full safety check, battery test, tyre inspection, brake adjustment, and lubrication.',
-    price: 'From £79',
+    price: 'From $79',
   },
   {
     icon: <Battery size={24} />,
     title: 'Battery Replacement',
     desc: 'We source and fit genuine replacement batteries for all major scooter brands.',
-    price: 'From £49',
+    price: 'From $49',
   },
   {
     icon: <MapPin size={24} />,
     title: 'Mobile Home Visits',
-    desc: 'Our technicians come to you. Available throughout England, Scotland, and Wales.',
-    price: 'From £35',
+    desc: 'Our technicians come to you. Available throughout the United States.',
+    price: 'From $35',
   },
 ];
 
@@ -169,7 +169,7 @@ export default function Home() {
               <span className="section-label">Our Best Sellers</span>
               <h2 className="section-title">Featured Scooters</h2>
               <p className="section-subtitle">
-                Our most popular models, chosen by thousands of happy customers across the UK.
+                Our most popular models, chosen by thousands of happy customers across the US.
               </p>
             </div>
             <Link to="/mobility-scooters" className="btn btn-outline">
@@ -196,7 +196,7 @@ export default function Home() {
         <div className="container">
           <div className="text-center section-header">
             <span className="section-label">Why Care Drive Enclosed Mobility</span>
-            <h2 className="section-title">The UK's Most Trusted Choice</h2>
+            <h2 className="section-title">The US's Most Trusted Choice</h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
               We don't just sell mobility scooters — we help you stay independent. Here's why over 20,000 customers have chosen us.
             </p>
@@ -285,7 +285,7 @@ export default function Home() {
             <span className="section-label">After-Sales Care</span>
             <h2 className="section-title">Servicing & Repairs</h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Our expert team is on hand to keep your scooter running perfectly. We offer comprehensive service plans across the UK.
+              Our expert team is on hand to keep your scooter running perfectly. We offer comprehensive service plans across the US.
             </p>
           </div>
           <div className="services-preview-grid">
@@ -402,8 +402,8 @@ export default function Home() {
               <Link to="/contact" className="btn btn-accent btn-lg">
                 Contact Us <ArrowRight size={18} />
               </Link>
-              <a href="tel:08001234567" className="btn btn-outline btn-lg">
-                Call 0800 123 4567
+              <a href="tel:18005550199" className="btn btn-outline btn-lg">
+                Call 1-800-555-0199
               </a>
             </div>
           </motion.div>

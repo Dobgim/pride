@@ -9,7 +9,7 @@ const values = [
   { icon: <Heart size={24} />, title: 'Care First', desc: 'Every decision we make starts with asking: is this the best for our customers? We put people before profit, always.' },
   { icon: <Award size={24} />, title: 'Quality You Can Trust', desc: 'We rigorously test every product before it reaches our range. If we wouldn\'t recommend it to our own family, we don\'t sell it.' },
   { icon: <Users size={24} />, title: 'Expert Knowledge', desc: 'Our team includes trained mobility specialists, physiotherapists, and occupational therapists to give you the best possible advice.' },
-  { icon: <Globe size={24} />, title: 'UK-Wide Support', desc: 'From the Scottish Highlands to Cornwall, our network of technicians and service partners has you covered, wherever you are.' },
+  { icon: <Globe size={24} />, title: 'US-Wide Support', desc: 'From coast to coast, our nationwide network of technicians and service partners has you covered, wherever you are.' },
 ];
 
 const teamMembers = [
@@ -20,11 +20,11 @@ const teamMembers = [
 ];
 
 const milestones = [
-  { year: '2004', event: 'Care Drive Enclosed Mobility founded in Leeds by Sarah Mitchell' },
+  { year: '2004', event: 'Care Drive Enclosed Mobility founded in Austin, Texas by Sarah Mitchell' },
   { year: '2008', event: 'Expanded to 3 showrooms and launched our first service plan' },
   { year: '2012', event: 'Recognised by Which? as a Recommended Provider' },
   { year: '2016', event: 'Launched our nationwide mobile service network' },
-  { year: '2020', event: 'Reached 15,000 customers across the UK' },
+  { year: '2020', event: 'Reached 15,000 customers across the US' },
   { year: '2024', event: 'Winner: Mobility & Access Awards — Best Customer Service' },
 ];
 
@@ -36,7 +36,7 @@ export default function About() {
         <div className="container page-hero-content">
           <nav className="breadcrumb"><Link to="/">Home</Link><span>/</span><span>About Us</span></nav>
           <h1>About Care Drive Enclosed Mobility</h1>
-          <p>Over 20 years of helping people across the UK stay independent, active, and mobile. Our story, our team, our values.</p>
+          <p>Over 20 years of helping people across the US stay independent, active, and mobile. Our story, our team, our values.</p>
         </div>
       </div>
 
@@ -54,7 +54,7 @@ export default function About() {
               <span className="section-label">Our Mission</span>
               <h2 className="section-title">We Believe Everyone Deserves to Move Freely</h2>
               <p>Care Drive Enclosed Mobility was founded in 2004 with a single purpose: to help people maintain their independence and quality of life, no matter their mobility challenges. We're not just selling scooters — we're giving people the freedom to visit family, explore their community, and live life on their own terms.</p>
-              <p style={{ marginTop: 16 }}>Today, we've helped over 20,000 customers across the UK find the right mobility solution, and we're as passionate about it as we were on day one.</p>
+              <p style={{ marginTop: 16 }}>Today, we've helped over 20,000 customers across the US find the right mobility solution, and we're as passionate about it as we were on day one.</p>
               <div className="about-stats-row">
                 {[
                   { value: '20,000+', label: 'Customers helped' },

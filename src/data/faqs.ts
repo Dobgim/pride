@@ -18,14 +18,14 @@ export const faqs: FAQ[] = [
     category: 'Buying Guide',
     question: 'Can I test-ride a scooter before buying?',
     answer:
-      'Yes! We have showrooms across the UK where you can see and test our full range. We also offer home demonstrations in many areas, where a specialist will bring a selection of scooters directly to your door. Contact us to arrange a no-obligation demo.',
+      'Yes! We have showrooms across the US where you can see and test our full range. We also offer home demonstrations in many areas, where a specialist will bring a selection of scooters directly to your door. Contact us to arrange a no-obligation demo.',
   },
   {
     id: 'faq-3',
     category: 'Delivery & Returns',
     question: 'How long does delivery take?',
     answer:
-      'Most scooters are delivered within 3–5 working days. We offer free delivery on all scooters over £500. Our delivery team will contact you to arrange a convenient time slot and will bring the scooter directly into your home and demonstrate how to use it.',
+      'Most scooters are delivered within 3–5 working days. We offer free delivery on all scooters over $500. Our delivery team will contact you to arrange a convenient time slot and will bring the scooter directly into your home and demonstrate how to use it.',
   },
   {
     id: 'faq-4',
@@ -74,6 +74,6 @@ export const faqs: FAQ[] = [
     category: 'Buying Guide',
     question: 'Are there any government grants available?',
     answer:
-      'In some circumstances, mobility scooters may be available through the NHS, local councils, or disability charity grants. We can provide guidance on applying for relevant funding. For VAT-registered disabled customers, scooters and accessories are zero-rated for VAT, saving you 20%. Our team can advise on your eligibility.',
+      'In some circumstances, mobility scooters may be available through Medicare, Medicaid, or private insurance. We can provide guidance on applying for relevant funding. Additionally, mobility scooters are sales-tax exempt or tax-deductible in most states for medical needs. Our team can advise on your eligibility.',
   },
 ];

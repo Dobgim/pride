@@ -10,7 +10,7 @@ const slides = [
     image: '/images/luxury_road.png',
     headline: 'Reclaim Your',
     accent: 'Independence',
-    sub: 'Premium enclosed mobility scooters designed to keep you active, confident, and free. Discover the UK\'s finest range.',
+    sub: 'Premium enclosed mobility scooters designed to keep you active, confident, and free. Discover the US\'s finest range.',
     cta: 'Shop All Scooters',
     ctaPath: '/mobility-scooters',
   },
@@ -104,7 +104,7 @@ export default function HeroSection() {
               transition={{ duration: 0.55, ease: [0.22, 0.61, 0.36, 1] }}
             >
               <span className="hero-label">
-                <span className="hero-label-dot" /> UK's Most Trusted Enclosed Mobility Brand
+                <span className="hero-label-dot" /> US's Most Trusted Enclosed Mobility Brand
               </span>
               <h1 className="hero-headline">
                 {slide.headline}<br />
@@ -121,7 +121,7 @@ export default function HeroSection() {
               </div>
               <div className="hero-trust-pills">
                 <div className="hero-trust-pill"><Shield size={13} /> 3-Year Warranty</div>
-                <div className="hero-trust-pill"><Truck size={13} /> Free UK Delivery</div>
+                <div className="hero-trust-pill"><Truck size={13} /> Free US Delivery</div>
                 <div className="hero-trust-pill"><Star size={13} /> 4.9★ Rated</div>
               </div>
             </motion.div>

@@ -5,9 +5,9 @@ import { Phone, Mail, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
 import './Contact.css';
 
 const contactInfo = [
-  { icon: <Phone size={20} />, label: 'Phone', value: '0800 123 4567', sub: 'Mon–Sat 9am–6pm', href: 'tel:08001234567' },
-  { icon: <Mail size={20} />, label: 'Email', value: 'info@pridemobility.co.uk', sub: 'We reply within 24 hours', href: 'mailto:info@pridemobility.co.uk' },
-  { icon: <MapPin size={20} />, label: 'Head Office', value: 'Units 1–4 Mobility House', sub: 'Leeds LS1 4BR, England' },
+  { icon: <Phone size={20} />, label: 'Phone', value: '1-800-555-0199', sub: 'Mon–Sat 9am–6pm', href: 'tel:18005550199' },
+  { icon: <Mail size={20} />, label: 'Email', value: 'caredriveenclosedmobility@gmail.com', sub: 'We reply within 24 hours', href: 'mailto:caredriveenclosedmobility@gmail.com' },
+  { icon: <MapPin size={20} />, label: 'Head Office', value: '123 Mobility Way', sub: 'Austin, TX 78701, US' },
   { icon: <Clock size={20} />, label: 'Opening Hours', value: 'Mon–Sat: 9am – 6pm', sub: 'Sunday: Closed' },
 ];
 
@@ -189,14 +189,14 @@ export default function Contact() {
                 />
                 <div className="contact-map-overlay">
                   <MapPin size={24} />
-                  <span>Leeds LS1 4BR</span>
+                  <span>Austin, TX 78701</span>
                 </div>
               </div>
 
               <div className="contact-demo-cta">
                 <h3>Want a free home demonstration?</h3>
                 <p>Our specialists can bring a selection of scooters directly to your home — completely free with no obligation to buy.</p>
-                <a href="tel:08001234567" className="btn btn-primary w-full" style={{ justifyContent: 'center' }}>
+                <a href="tel:18005550199" className="btn btn-primary w-full" style={{ justifyContent: 'center' }}>
                   <Phone size={15} /> Call to Arrange
                 </a>
               </div>
