@@ -1,0 +1,129 @@
+/* PRODUCT LIST PAGE SHARED STYLES */
+.category-quick-nav {
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-100);
+  padding: 16px 0;
+  position: sticky;
+  top: calc(var(--navbar-height) + 36px);
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+}
+
+.quick-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quick-nav-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  margin-right: 4px;
+}
+
+.quick-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  border: 1.5px solid var(--color-gray-200);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.quick-nav-link:hover, .quick-nav-link.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Toolbar */
+.product-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.product-count {
+  font-size: 14px;
+  color: var(--color-gray-500);
+  font-weight: 500;
+}
+
+.product-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-gray-500);
+}
+
+.sort-select {
+  padding: 8px 12px;
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  background: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  font-family: var(--font-main);
+}
+
+.sort-select:focus {
+  border-color: var(--color-accent);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+
+/* Category intro band */
+.category-intro {
+  background: var(--color-gray-50);
+  padding: 40px 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.category-intro-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.category-intro-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.category-intro h2 {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.category-intro p {
+  font-size: 14px;
+  color: var(--color-gray-500);
+  max-width: 600px;
+  line-height: 1.65;
+}

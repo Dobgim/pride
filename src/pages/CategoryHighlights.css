@@ -1,0 +1,35 @@
+/* shared category highlight strip */
+.lw-highlights {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.lw-highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lw-highlight-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.lw-highlight-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+.lw-highlight-desc {
+  font-size: 13px;
+  color: var(--color-gray-500);
+}
