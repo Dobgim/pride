@@ -301,7 +301,23 @@
 
 @media (max-width: 1023px) {
   .navbar-nav { display: none; }
-  .navbar-mobile-toggle { display: flex !important; }
+  .navbar-mobile-toggle {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 600;
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-md);
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    flex-shrink: 0;
+  }
+  .navbar-mobile-toggle:hover {
+    background: var(--color-accent);
+  }
 }
 
 /* ===== MOBILE MENU ===== */

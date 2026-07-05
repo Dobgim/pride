@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
+import WhatsAppButton from './components/WhatsAppButton';
 
 import Home from './pages/Home';
 import MobilityScooters from './pages/MobilityScooters';
@@ -76,6 +77,7 @@ export default function App() {
       <AnimatedRoutes />
       {!isAdmin && <Footer />}
       {!isAdmin && <CartDrawer />}
+      {!isAdmin && <WhatsAppButton />}
     </>
   );
 }
