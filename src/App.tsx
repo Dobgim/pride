@@ -21,7 +21,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 
 const pageVariants = {
   initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.12, ease: 'easeOut' } },
+  animate: { opacity: 1, transition: { duration: 0.12 } },
   exit: { opacity: 0, transition: { duration: 0.08 } },
 };
 
