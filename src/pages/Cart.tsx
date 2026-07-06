@@ -1,44 +1,116 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, ShieldCheck, Truck, RotateCcw, CheckCircle } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, ShieldCheck, Truck, RotateCcw, CheckCircle, X, Send, User, Mail, Phone, Package } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import './Cart.css';
 
-const WHATSAPP_NUMBER = '19125589673';
-
 type PaymentOption = 'full' | 'down';
+
+type CheckoutForm = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
+type CheckoutStatus = 'idle' | 'sending' | 'success' | 'error';
 
 export default function Cart() {
   const { items, removeItem, updateQuantity, total, clearCart } = useCart();
   const [paymentOption, setPaymentOption] = useState<PaymentOption | null>(null);
   const [paymentError, setPaymentError] = useState(false);
 
+  // Checkout modal state
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState<CheckoutForm>({ name: '', email: '', phone: '' });
+  const [formErrors, setFormErrors] = useState<Partial<CheckoutForm>>({});
+  const [checkoutStatus, setCheckoutStatus] = useState<CheckoutStatus>('idle');
+
   // Always free shipping
   const grandTotal = total;
   const downPayment = total * 0.3; // 30% down payment
 
-  const handleWhatsAppCheckout = () => {
+  const handleProceedToCheckout = () => {
     if (!paymentOption) {
       setPaymentError(true);
       document.getElementById('payment-options')?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
     setPaymentError(false);
+    setShowModal(true);
+  };
+
+  const validateForm = () => {
+    const errors: Partial<CheckoutForm> = {};
+    if (!form.name.trim()) errors.name = 'Full name is required';
+    if (!form.email.trim()) errors.email = 'Email address is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Enter a valid email';
+    if (!form.phone.trim()) errors.phone = 'Phone number is required';
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setCheckoutStatus('sending');
 
     const itemLines = items
       .map(i => `• ${i.product.name} x${i.quantity} — $${(i.product.price * i.quantity).toLocaleString()}`)
       .join('\n');
 
-    const paymentLine =
+    const paymentSummary =
       paymentOption === 'full'
-        ? `*Payment: Full Payment — $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}*`
-        : `*Payment: Down Payment (30%) — $${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })}* (Balance: $${(grandTotal - downPayment).toLocaleString(undefined, { minimumFractionDigits: 2 })})`;
+        ? `Full Payment — $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+        : `Down Payment (30%) — $${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })} | Balance on delivery: $${(grandTotal - downPayment).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
 
-    const message = encodeURIComponent(
-      `Hello Care Drive! I'd like to order the following:\n\n${itemLines}\n\nDelivery: FREE (3-Day Shipping)\n*Order Total: $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}*\n\n${paymentLine}\n\nPlease confirm my order. Thank you!`
-    );
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+    const messageBody = `
+NEW ORDER RECEIVED — Care Drive Mobility
+
+Customer Details:
+  Name:   ${form.name}
+  Email:  ${form.email}
+  Phone:  ${form.phone}
+
+Order Items:
+${itemLines}
+
+Delivery: FREE 3-Day Shipping
+Order Total: $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+Payment Option: ${paymentSummary}
+    `.trim();
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: '4a1a9b50-34cc-4fac-acf7-22ed8c5f7149',
+          subject: `🛒 New Order from ${form.name} — $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+          from_name: form.name,
+          email: form.email,
+          message: messageBody,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setCheckoutStatus('success');
+        clearCart();
+      } else {
+        setCheckoutStatus('error');
+      }
+    } catch {
+      setCheckoutStatus('error');
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setForm({ name: '', email: '', phone: '' });
+    setFormErrors({});
+    if (checkoutStatus !== 'success') setCheckoutStatus('idle');
   };
 
   if (items.length === 0) {
@@ -70,7 +142,8 @@ export default function Cart() {
   }
 
   return (
-    <div className="page-wrapper">
+    <>
+      <div className="page-wrapper">
       <div className="page-hero">
         <div className="container page-hero-content">
           <nav className="breadcrumb"><Link to="/">Home</Link><span>/</span><span>Cart</span></nav>
@@ -262,13 +335,11 @@ export default function Cart() {
 
               {/* Checkout button */}
               <button
-                className="btn btn-accent btn-lg w-full"
-                style={{ justifyContent: 'center', background: '#25d366', borderColor: '#25d366', marginTop: 16 }}
-                onClick={handleWhatsAppCheckout}
+                className="btn btn-primary btn-lg w-full"
+                style={{ justifyContent: 'center', marginTop: 16 }}
+                onClick={handleProceedToCheckout}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18" height="18" fill="white" style={{flexShrink:0}}>
-                  <path d="M16 0C7.163 0 0 7.163 0 16c0 2.82.736 5.462 2.025 7.756L0 32l8.466-2.217A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm8.315 22.292c-.35.98-2.03 1.88-2.793 1.95-.713.065-1.384.322-4.666-1.037-3.93-1.63-6.453-5.65-6.646-5.91-.193-.26-1.576-2.098-1.576-4.002s.998-2.84 1.354-3.23c.356-.39.776-.488 1.034-.488.258 0 .516.002.742.013.237.012.556-.09.87.664.35.836 1.19 2.893 1.295 3.103.104.21.174.457.034.736-.14.28-.21.456-.42.703-.21.247-.44.551-.63.74-.21.21-.428.437-.185.857.243.42 1.08 1.78 2.32 2.884 1.596 1.42 2.943 1.86 3.363 2.07.42.21.664.175.908-.104.244-.28 1.048-1.225 1.328-1.645.28-.42.558-.35.94-.21.383.14 2.433 1.148 2.852 1.357.42.21.698.315.8.49.104.175.104 1.015-.246 1.995z"/>
-                </svg>
+                <ShieldCheck size={18} />
                 Proceed to Checkout <ArrowRight size={18} />
               </button>
 
@@ -287,5 +358,157 @@ export default function Cart() {
         </div>
       </section>
     </div>
+
+    {/* ── Checkout Modal ── */}
+    <AnimatePresence>
+      {showModal && (
+        <>
+          <motion.div
+            className="checkout-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={checkoutStatus !== 'sending' ? closeModal : undefined}
+          />
+          <motion.div
+            className="checkout-modal"
+            initial={{ opacity: 0, scale: 0.92, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 40 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Checkout form"
+          >
+            {/* Close */}
+            {checkoutStatus !== 'sending' && (
+              <button className="checkout-modal-close" onClick={closeModal} aria-label="Close">
+                <X size={20} />
+              </button>
+            )}
+
+            {/* Success state */}
+            {checkoutStatus === 'success' ? (
+              <motion.div
+                className="checkout-success"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className="checkout-success-icon">
+                  <CheckCircle size={56} />
+                </div>
+                <h2>Order Placed!</h2>
+                <p>Thank you for your order. We've received your details and will contact you shortly to confirm your purchase.</p>
+                <Link to="/" className="btn btn-primary" onClick={closeModal}>
+                  Back to Home <ArrowRight size={16} />
+                </Link>
+              </motion.div>
+            ) : (
+              <>
+                <div className="checkout-modal-header">
+                  <div className="checkout-modal-icon"><Package size={24} /></div>
+                  <div>
+                    <h2 className="checkout-modal-title">Complete Your Order</h2>
+                    <p className="checkout-modal-subtitle">Fill in your details and we'll confirm your order</p>
+                  </div>
+                </div>
+
+                {/* Order summary strip */}
+                <div className="checkout-order-summary">
+                  <div className="checkout-order-items">
+                    {items.map(i => (
+                      <div key={i.product.id} className="checkout-order-item">
+                        <img src={i.product.image} alt={i.product.name} />
+                        <div className="checkout-order-item-info">
+                          <span className="checkout-order-item-name">{i.product.name}</span>
+                          <span className="checkout-order-item-qty">x{i.quantity}</span>
+                        </div>
+                        <span className="checkout-order-item-price">
+                          ${(i.product.price * i.quantity).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="checkout-order-total">
+                    <span>Order Total</span>
+                    <span>${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="checkout-payment-badge">
+                    {paymentOption === 'full' ? '💳 Full Payment' : `🤝 Down Payment — $${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                  </div>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleSubmitOrder} className="checkout-form" noValidate>
+                  <div className={`checkout-field ${formErrors.name ? 'has-error' : ''}`}>
+                    <label htmlFor="checkout-name"><User size={14} /> Full Name</label>
+                    <input
+                      id="checkout-name"
+                      type="text"
+                      placeholder="e.g. John Smith"
+                      value={form.name}
+                      onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                      autoComplete="name"
+                    />
+                    {formErrors.name && <span className="checkout-field-error">{formErrors.name}</span>}
+                  </div>
+
+                  <div className={`checkout-field ${formErrors.email ? 'has-error' : ''}`}>
+                    <label htmlFor="checkout-email"><Mail size={14} /> Email Address</label>
+                    <input
+                      id="checkout-email"
+                      type="email"
+                      placeholder="e.g. john@example.com"
+                      value={form.email}
+                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                      autoComplete="email"
+                    />
+                    {formErrors.email && <span className="checkout-field-error">{formErrors.email}</span>}
+                  </div>
+
+                  <div className={`checkout-field ${formErrors.phone ? 'has-error' : ''}`}>
+                    <label htmlFor="checkout-phone"><Phone size={14} /> Phone Number</label>
+                    <input
+                      id="checkout-phone"
+                      type="tel"
+                      placeholder="e.g. +1 (555) 000-0000"
+                      value={form.phone}
+                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                      autoComplete="tel"
+                    />
+                    {formErrors.phone && <span className="checkout-field-error">{formErrors.phone}</span>}
+                  </div>
+
+                  {checkoutStatus === 'error' && (
+                    <div className="checkout-submit-error">
+                      Something went wrong. Please try again or call us at +1 (912) 558-9673.
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-lg w-full"
+                    style={{ justifyContent: 'center', marginTop: 8 }}
+                    disabled={checkoutStatus === 'sending'}
+                  >
+                    {checkoutStatus === 'sending' ? (
+                      <><span className="checkout-spinner" /> Placing Order…</>
+                    ) : (
+                      <><Send size={16} /> Place Order</>
+                    )}
+                  </button>
+
+                  <p className="checkout-disclaimer">
+                    <ShieldCheck size={13} /> Your info is secure. We'll reach out to confirm delivery details.
+                  </p>
+                </form>
+              </>
+            )}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
