@@ -362,7 +362,7 @@ Payment Option: ${paymentSummary}
     {/* ── Checkout Modal ── */}
     <AnimatePresence>
       {showModal && (
-        <>
+        <div className="checkout-modal-wrapper">
           <motion.div
             className="checkout-modal-overlay"
             initial={{ opacity: 0 }}
@@ -372,10 +372,10 @@ Payment Option: ${paymentSummary}
           />
           <motion.div
             className="checkout-modal"
-            initial={{ opacity: 0, scale: 0.92, y: 40 }}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 40 }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ duration: 0.2 }}
             role="dialog"
             aria-modal="true"
             aria-label="Checkout form"
@@ -506,7 +506,7 @@ Payment Option: ${paymentSummary}
               </>
             )}
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
     </>
