@@ -6,7 +6,7 @@ import {
   LogOut, TrendingUp, TrendingDown, Bell, Search, ChevronRight,
   Zap, Eye, Edit2, Trash2, Plus, DollarSign, ShoppingCart,
   Star, AlertTriangle, CheckCircle, Clock, BarChart3, X,
-  Menu, ArrowUpRight, Filter, Download, Save, Trash
+  Menu, ArrowUpRight, Download, Save, FileText, Mail, Phone
 } from 'lucide-react';
 import {
   loadProductsFromSupabase,
@@ -15,6 +15,13 @@ import {
   deleteProductFromSupabase,
   type Product
 } from '../../data/products';
+import {
+  loadOrdersFromSupabase,
+  updateOrderStatusInSupabase,
+  deleteOrderFromSupabase,
+  type Order
+} from '../../data/orders';
+import InvoiceModal from '../../components/InvoiceModal';
 import './AdminDashboard.css';
 
 /* ── Image Compressor Utility ── */
@@ -74,16 +81,6 @@ const statsData = [
   { label: 'Avg. Order Value', value: '$531', change: '-2.1%', up: false, icon: TrendingUp, color: '#f59e0b' },
 ];
 
-const recentOrders = [
-  { id: '#ORD-8821', customer: 'Margaret Thompson', product: 'RoadMaster 8', amount: '$2,499', status: 'Delivered', date: '04 Jul 2025' },
-  { id: '#ORD-8820', customer: 'Robert Davies', product: 'FoldPro Ultra', amount: '$1,499', status: 'Shipped', date: '04 Jul 2025' },
-  { id: '#ORD-8819', customer: 'Helen Okafor', product: 'SlimLine 3 Plus', amount: '$899', status: 'Processing', date: '03 Jul 2025' },
-  { id: '#ORD-8818', customer: 'James Whitfield', product: 'CrossCountry 6+', amount: '$1,999', status: 'Delivered', date: '03 Jul 2025' },
-  { id: '#ORD-8817', customer: 'Patricia Lawson', product: 'TravelLite 4', amount: '$1,149', status: 'Pending', date: '02 Jul 2025' },
-  { id: '#ORD-8816', customer: 'Thomas Briggs', product: 'Terrain Pro 4WD', amount: '$2,999', status: 'Delivered', date: '02 Jul 2025' },
-  { id: '#ORD-8815', customer: 'Susan Clarke', product: 'EasyGo S3', amount: '$749', status: 'Shipped', date: '01 Jul 2025' },
-];
-
 const weeklyRevenue = [62, 85, 74, 91, 88, 110, 97];
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -120,7 +117,8 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 767);
   const [searchQuery, setSearchQuery] = useState('');
   const [productList, setProductList] = useState<Product[]>([]);
-  const [notifications] = useState(3);
+  const [orderList, setOrderList] = useState<Order[]>([]);
+  const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Form state for Add/Edit Modal
@@ -144,10 +142,14 @@ export default function AdminDashboard() {
   const refreshProducts = async () => {
     setLoading(true);
     try {
-      const data = await loadProductsFromSupabase();
-      setProductList(data);
+      const [products, orders] = await Promise.all([
+        loadProductsFromSupabase(),
+        loadOrdersFromSupabase(),
+      ]);
+      setProductList(products);
+      setOrderList(orders);
     } catch (e) {
-      console.error('Failed to load products:', e);
+      console.error('Failed to load data:', e);
     } finally {
       setLoading(false);
     }
@@ -156,6 +158,56 @@ export default function AdminDashboard() {
   useEffect(() => {
     refreshProducts();
   }, []);
+
+  const handleOrderStatusChange = async (id: string, status: string) => {
+    setOrderList(prev => prev.map(o => (o.id === id ? { ...o, status } : o)));
+    try {
+      await updateOrderStatusInSupabase(id, status);
+    } catch (e) {
+      console.error('Failed to update order status:', e);
+      alert('Failed to update order status. Please try again.');
+      refreshProducts();
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!window.confirm('Delete this order permanently?')) return;
+    try {
+      await deleteOrderFromSupabase(id);
+      setOrderList(prev => prev.filter(o => o.id !== id));
+    } catch (e) {
+      alert('Failed to delete order. Please try again.');
+      console.error(e);
+    }
+  };
+
+  const handleExportOrders = () => {
+    if (orderList.length === 0) {
+      alert('No orders to export yet.');
+      return;
+    }
+    const esc = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+    const header = ['Order ID', 'Customer', 'Email', 'Phone', 'Items', 'Total', 'Payment', 'Status', 'Date'];
+    const rows = orderList.map(o => [
+      o.id,
+      o.customerName,
+      o.customerEmail,
+      o.customerPhone,
+      o.items.map(it => `${it.name} x${it.quantity}`).join(' | '),
+      o.total,
+      o.paymentOption === 'full' ? 'Full Payment' : `Down Payment (${o.downPayment || 0})`,
+      o.status,
+      o.createdAt,
+    ].map(esc).join(','));
+    const csv = [header.map(esc).join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `caredrive-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleLogout = () => {
     sessionStorage.removeItem('cd_admin_auth');
@@ -324,10 +376,34 @@ export default function AdminDashboard() {
 
   const maxRevenue = Math.max(...weeklyRevenue);
 
+  // ── Order-derived helpers & stats ──
+  const money = (n: number) =>
+    `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatOrderDate = (iso: string) =>
+    iso ? new Date(iso).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+
+  const pendingOrders = orderList.filter(o => o.status === 'Pending').length;
+  const totalRevenue = orderList.reduce((s, o) => s + o.total, 0);
+  const uniqueCustomers = new Set(orderList.map(o => o.customerEmail.toLowerCase())).size;
+  const avgOrderValue = orderList.length ? totalRevenue / orderList.length : 0;
+
+  const liveStats = [
+    { label: 'Total Revenue', value: money(totalRevenue), icon: DollarSign, color: '#10b981' },
+    { label: 'Total Orders', value: String(orderList.length), icon: ShoppingCart, color: '#3b82f6' },
+    { label: 'Customers', value: String(uniqueCustomers), icon: Users, color: '#8b5cf6' },
+    { label: 'Avg. Order Value', value: money(avgOrderValue), icon: TrendingUp, color: '#f59e0b' },
+  ];
+
   // Filtered lists based on search
-  const filteredProducts = productList.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredProducts = productList.filter(p =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredOrders = orderList.filter(o =>
+    o.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    o.customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    o.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -412,7 +488,7 @@ export default function AdminDashboard() {
           <div className="adm-topbar-right">
             <button className="adm-notif-btn" onClick={refreshProducts} title="Sync with Supabase">
               <Bell size={18} />
-              {notifications > 0 && <span className="adm-notif-badge">{notifications}</span>}
+              {pendingOrders > 0 && <span className="adm-notif-badge">{pendingOrders}</span>}
             </button>
             <div className="adm-user-chip">
               <div className="adm-user-avatar">A</div>
@@ -457,7 +533,7 @@ export default function AdminDashboard() {
 
                   {/* Stats grid */}
                   <div className="adm-stats-grid">
-                    {statsData.map((stat, i) => {
+                    {liveStats.map((stat, i) => {
                       const Icon = stat.icon;
                       return (
                         <motion.div
@@ -474,9 +550,8 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           <div className="adm-stat-value">{stat.value}</div>
-                          <div className={`adm-stat-change ${stat.up ? 'up' : 'down'}`}>
-                            {stat.up ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
-                            {stat.change} vs last month
+                          <div className="adm-stat-change up">
+                            <TrendingUp size={13} /> Live from Supabase
                           </div>
                         </motion.div>
                       );
@@ -549,38 +624,44 @@ export default function AdminDashboard() {
                     <div className="adm-card-header">
                       <div>
                         <h3>Recent Orders</h3>
-                        <p>Latest 7 transactions</p>
+                        <p>{orderList.length ? `Latest ${Math.min(orderList.length, 7)} of ${orderList.length} orders` : 'No orders yet'}</p>
                       </div>
                       <button className="adm-btn-text" onClick={() => setActiveNav('orders')}>
                         View all <ArrowUpRight size={14} />
                       </button>
                     </div>
+                    {orderList.length === 0 ? (
+                      <div style={{ padding: '32px', textAlign: 'center', color: '#9ca3af' }}>
+                        New checkout orders from your website will appear here automatically.
+                      </div>
+                    ) : (
                     <div className="adm-table-wrap">
                       <table className="adm-table">
                         <thead>
                           <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
-                            <th>Product</th>
+                            <th>Items</th>
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Date</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {recentOrders.map(order => (
+                          {orderList.slice(0, 7).map(order => (
                             <tr key={order.id}>
                               <td className="adm-td-mono">{order.id}</td>
-                              <td>{order.customer}</td>
-                              <td>{order.product}</td>
-                              <td className="adm-td-bold">{order.amount}</td>
-                              <td><span className={`adm-status-badge ${statusColors[order.status]}`}>{order.status}</span></td>
-                              <td className="adm-td-muted">{order.date}</td>
+                              <td>{order.customerName}</td>
+                              <td>{order.items.reduce((s, it) => s + it.quantity, 0)} item(s)</td>
+                              <td className="adm-td-bold">{money(order.total)}</td>
+                              <td><span className={`adm-status-badge ${statusColors[order.status] || 'status-gray'}`}>{order.status}</span></td>
+                              <td className="adm-td-muted">{formatOrderDate(order.createdAt)}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -589,47 +670,122 @@ export default function AdminDashboard() {
               {activeNav === 'orders' && (
                 <div>
                   <div className="adm-page-header">
-                    <div><h2>Orders</h2><p>Manage all customer orders</p></div>
+                    <div><h2>Orders</h2><p>{filteredOrders.length} order(s) · {pendingOrders} pending</p></div>
                     <div className="adm-page-actions">
-                      <button className="adm-btn-outline"><Filter size={15} /> Filter</button>
-                      <button className="adm-btn-outline"><Download size={15} /> Export CSV</button>
+                      <button className="adm-btn-outline" onClick={refreshProducts}><Download size={15} /> Refresh</button>
+                      <button className="adm-btn-outline" onClick={handleExportOrders}><Download size={15} /> Export CSV</button>
                     </div>
                   </div>
-                  <div className="adm-card adm-table-card">
-                    <div className="adm-table-wrap">
-                      <table className="adm-table">
-                        <thead>
-                          <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Product</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {recentOrders.map(order => (
-                            <tr key={order.id}>
-                              <td className="adm-td-mono">{order.id}</td>
-                              <td>{order.customer}</td>
-                              <td>{order.product}</td>
-                              <td className="adm-td-bold">{order.amount}</td>
-                              <td><span className={`adm-status-badge ${statusColors[order.status]}`}>{order.status}</span></td>
-                              <td className="adm-td-muted">{order.date}</td>
-                              <td>
-                                <div className="adm-row-actions">
-                                  <button className="adm-icon-btn view"><Eye size={14} /></button>
-                                  <button className="adm-icon-btn edit"><Edit2 size={14} /></button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+
+                  {filteredOrders.length === 0 ? (
+                    <div className="adm-card" style={{ padding: '60px 32px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 48, marginBottom: 16 }}>🧾</div>
+                      <h3 style={{ marginBottom: 8, fontSize: 18, color: 'white' }}>No orders yet</h3>
+                      <p style={{ color: '#9ca3af', maxWidth: 380, margin: '0 auto' }}>
+                        When a customer checks out on your website, their order appears here — and you can generate an invoice for them with one click.
+                      </p>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      {/* Desktop table */}
+                      <div className="adm-card adm-table-card adm-desktop-only">
+                        <div className="adm-table-wrap">
+                          <table className="adm-table">
+                            <thead>
+                              <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Contact</th>
+                                <th>Items</th>
+                                <th>Amount</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredOrders.map(order => (
+                                <tr key={order.id}>
+                                  <td className="adm-td-mono">{order.id}</td>
+                                  <td>{order.customerName}</td>
+                                  <td className="adm-td-muted" style={{ fontSize: 12 }}>
+                                    <div>{order.customerEmail}</div>
+                                    <div>{order.customerPhone}</div>
+                                  </td>
+                                  <td>{order.items.reduce((s, it) => s + it.quantity, 0)}</td>
+                                  <td className="adm-td-bold">{money(order.total)}</td>
+                                  <td className="adm-td-muted" style={{ fontSize: 12 }}>
+                                    {order.paymentOption === 'full' ? 'Full' : `Down (${money(order.downPayment || 0)})`}
+                                  </td>
+                                  <td>
+                                    <select
+                                      className={`adm-order-status-select ${statusColors[order.status] || 'status-gray'}`}
+                                      value={order.status}
+                                      onChange={e => handleOrderStatusChange(order.id, e.target.value)}
+                                    >
+                                      {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(s => (
+                                        <option key={s} value={s}>{s}</option>
+                                      ))}
+                                    </select>
+                                  </td>
+                                  <td className="adm-td-muted">{formatOrderDate(order.createdAt)}</td>
+                                  <td>
+                                    <div className="adm-row-actions">
+                                      <button className="adm-icon-btn invoice" title="Create Invoice" onClick={() => setInvoiceOrder(order)}><FileText size={14} /></button>
+                                      <button className="adm-icon-btn delete" title="Delete" onClick={() => handleDeleteOrder(order.id)}><Trash2 size={14} /></button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* Mobile card view */}
+                      <div className="adm-product-cards adm-mobile-only">
+                        {filteredOrders.map(order => (
+                          <div key={order.id} className="adm-order-card-item">
+                            <div className="adm-order-card-head">
+                              <div>
+                                <div className="adm-product-name">{order.customerName}</div>
+                                <div className="adm-td-mono" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{order.id}</div>
+                              </div>
+                              <div className="adm-order-card-amount">{money(order.total)}</div>
+                            </div>
+                            <div className="adm-order-card-contact">
+                              <div><Mail size={12} /> {order.customerEmail}</div>
+                              <div><Phone size={12} /> {order.customerPhone}</div>
+                            </div>
+                            <div className="adm-order-card-meta">
+                              <span>{order.items.reduce((s, it) => s + it.quantity, 0)} item(s)</span>
+                              <span>{order.paymentOption === 'full' ? 'Full Payment' : `Down: ${money(order.downPayment || 0)}`}</span>
+                              <span>{formatOrderDate(order.createdAt)}</span>
+                            </div>
+                            <select
+                              className={`adm-order-status-select ${statusColors[order.status] || 'status-gray'}`}
+                              value={order.status}
+                              onChange={e => handleOrderStatusChange(order.id, e.target.value)}
+                              style={{ marginTop: 10, width: '100%' }}
+                            >
+                              {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(s => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                            <div className="adm-product-card-actions">
+                              <button className="adm-product-card-btn edit-btn" onClick={() => setInvoiceOrder(order)}>
+                                <FileText size={14} /> Invoice
+                              </button>
+                              <button className="adm-product-card-btn delete-btn" onClick={() => handleDeleteOrder(order.id)}>
+                                <Trash2 size={14} /> Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -1151,6 +1307,13 @@ export default function AdminDashboard() {
               </form>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── INVOICE MODAL ── */}
+      <AnimatePresence>
+        {invoiceOrder && (
+          <InvoiceModal order={invoiceOrder} onClose={() => setInvoiceOrder(null)} />
         )}
       </AnimatePresence>
     </div>

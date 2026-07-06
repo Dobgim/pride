@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, ShieldCheck, Truck, RotateCcw, CheckCircle, X, Send, User, Mail, Phone, Package } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { addOrderToSupabase, type Order } from '../data/orders';
 import './Cart.css';
 
 type PaymentOption = 'full' | 'down';
@@ -80,6 +81,33 @@ Delivery: FREE 3-Day Shipping
 Order Total: $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
 Payment Option: ${paymentSummary}
     `.trim();
+
+    // Persist the order to Supabase so it appears in the admin dashboard.
+    // Best-effort: a DB hiccup must not block the confirmation email.
+    const order: Order = {
+      id: `ORD-${Date.now()}`,
+      customerName: form.name,
+      customerEmail: form.email,
+      customerPhone: form.phone,
+      items: items.map(i => ({
+        id: i.product.id,
+        name: i.product.name,
+        price: i.product.price,
+        quantity: i.quantity,
+        image: i.product.image,
+      })),
+      subtotal: total,
+      total: grandTotal,
+      paymentOption: paymentOption as 'full' | 'down',
+      downPayment: paymentOption === 'down' ? downPayment : undefined,
+      status: 'Pending',
+      createdAt: new Date().toISOString(),
+    };
+    try {
+      await addOrderToSupabase(order);
+    } catch (err) {
+      console.error('Failed to save order to Supabase:', err);
+    }
 
     try {
       const res = await fetch('https://api.web3forms.com/submit', {
