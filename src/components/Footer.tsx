@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Share2, MessageCircle, Camera, PlayCircle, Zap, ArrowRight } from 'lucide-react';
+import { Phone, Mail, Share2, MessageCircle, Camera, PlayCircle, Zap, ArrowRight } from 'lucide-react';
 import './Footer.css';
 
 const footerLinks = {
@@ -77,10 +77,6 @@ export default function Footer() {
                   <Mail size={14} />
                   <span>caredriveenclosedmobility@gmail.com</span>
                 </a>
-                <div className="footer-contact-item">
-                  <MapPin size={14} />
-                  <span>3606 Norwich Street, Brunswick, Georgia 31520</span>
-                </div>
               </div>
               <div className="footer-social">
                 {[

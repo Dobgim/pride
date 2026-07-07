@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Phone, Mail, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import { Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
 import './Contact.css';
 
 const contactInfo = [
   { icon: <Phone size={20} />, label: 'Phone', value: '+1 (912) 558-9673', sub: 'Mon–Sat 9am–6pm', href: 'tel:+19125589673' },
   { icon: <Mail size={20} />, label: 'Email', value: 'caredriveenclosedmobility@gmail.com', sub: 'We reply within 24 hours', href: 'mailto:caredriveenclosedmobility@gmail.com' },
-  { icon: <MapPin size={20} />, label: 'Address', value: '3606 Norwich Street', sub: 'Brunswick, Georgia 31520' },
   { icon: <Clock size={20} />, label: 'Opening Hours', value: 'Mon–Sat: 9am – 6pm', sub: 'Sunday: Closed' },
 ];
 
@@ -179,18 +178,6 @@ export default function Contact() {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* Map placeholder */}
-              <div className="contact-map">
-                <img
-                  src="https://images.unsplash.com/photo-1569336415962-a4bd9f69c97b?w=600&q=80"
-                  alt="Map of Care Drive Enclosed Mobility head office"
-                />
-                <div className="contact-map-overlay">
-                  <MapPin size={24} />
-                  <span>Austin, TX 78701</span>
-                </div>
               </div>
 
               <div className="contact-demo-cta">

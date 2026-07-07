@@ -20,7 +20,7 @@ const teamMembers = [
 ];
 
 const milestones = [
-  { year: '2004', event: 'Care Drive Enclosed Mobility founded in Austin, Texas by Sarah Mitchell' },
+  { year: '2004', event: 'Care Drive Enclosed Mobility founded by Sarah Mitchell' },
   { year: '2008', event: 'Expanded to 3 showrooms and launched our first service plan' },
   { year: '2012', event: 'Recognised by Which? as a Recommended Provider' },
   { year: '2016', event: 'Launched our nationwide mobile service network' },

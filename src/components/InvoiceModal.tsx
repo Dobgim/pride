@@ -5,7 +5,6 @@ import './InvoiceModal.css';
 
 const COMPANY = {
   name: 'Care Drive Enclosed Mobility LLC',
-  address: '3606 Norwich Street, Brunswick, Georgia 31520',
   phone: '+1 (912) 558-9673',
   email: 'caredriveenclosedmobility@gmail.com',
 };
@@ -93,7 +92,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
     <div class="top">
       <div>
         <div class="brand">Care Drive</div>
-        <div class="brand-sub">${COMPANY.name}<br/>${COMPANY.address}<br/>${COMPANY.phone} · ${COMPANY.email}</div>
+        <div class="brand-sub">${COMPANY.name}<br/>${COMPANY.phone} · ${COMPANY.email}</div>
       </div>
       <div class="inv-title">
         <h1>INVOICE</h1>
@@ -224,8 +223,6 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
                 <div className="inv-brand">Care Drive</div>
                 <div className="inv-brand-sub">
                   {COMPANY.name}
-                  <br />
-                  {COMPANY.address}
                   <br />
                   {COMPANY.phone} · {COMPANY.email}
                 </div>
