@@ -75,6 +75,16 @@ export const mapClientProductToDb = (p: Product) => {
 
 // ── Supabase CRUD ────────────────────────────────────────────────────────────
 
+/**
+ * Columns needed to render a product listing or card.
+ *
+ * Deliberately excludes `specs`, which carries the extra-images and video
+ * payload. Listings only ever show `image`, so pulling `specs` for every row
+ * multiplied the response size for no benefit.
+ */
+const LIST_COLUMNS =
+  'id,name,category,price,down_payment,original_price,image,rating,reviews,badge,short_desc,features,in_stock,is_new,is_bestseller';
+
 /** Load all products from Supabase. Returns [] if the table is empty. */
 export const loadProductsFromSupabase = async (): Promise<Product[]> => {
   try {
@@ -92,6 +102,27 @@ export const loadProductsFromSupabase = async (): Promise<Product[]> => {
   } catch (e) {
     console.error('Exception loading products from Supabase:', e);
     return [];
+  }
+};
+
+/** Load a single product in full, including extra images and video. */
+export const loadProductById = async (id: string): Promise<Product | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching product from Supabase:', error);
+      return null;
+    }
+
+    return data ? mapDbProductToClient(data) : null;
+  } catch (e) {
+    console.error('Exception loading product from Supabase:', e);
+    return null;
   }
 };
 
@@ -117,14 +148,51 @@ export const deleteProductFromSupabase = async (id: string) => {
 
 // ── Convenience helpers ──────────────────────────────────────────────────────
 
+/**
+ * Fetch one category's products. Filtering happens in the database — the old
+ * version downloaded the entire table and filtered in the browser, so every
+ * category page cost a full-catalogue transfer.
+ */
 export const getProductsByCategory = async (
   category: Product['category']
 ): Promise<Product[]> => {
-  const all = await loadProductsFromSupabase();
-  return all.filter((p) => p.category === category);
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(LIST_COLUMNS)
+      .eq('category', category)
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching products by category from Supabase:', error);
+      return [];
+    }
+
+    return (data ?? []).map(mapDbProductToClient);
+  } catch (e) {
+    console.error('Exception loading products by category:', e);
+    return [];
+  }
 };
 
+/** Featured products for the home page — filtered and capped in the database. */
 export const getFeaturedProducts = async (): Promise<Product[]> => {
-  const all = await loadProductsFromSupabase();
-  return all.filter((p) => p.isBestseller || p.isNew).slice(0, 6);
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(LIST_COLUMNS)
+      .or('is_bestseller.eq.true,is_new.eq.true')
+      .order('id', { ascending: true })
+      .limit(6);
+
+    if (error) {
+      console.error('Error fetching featured products from Supabase:', error);
+      return [];
+    }
+
+    return (data ?? []).map(mapDbProductToClient);
+  } catch (e) {
+    console.error('Exception loading featured products:', e);
+    return [];
+  }
 };

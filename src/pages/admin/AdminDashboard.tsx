@@ -22,46 +22,8 @@ import {
   type Order
 } from '../../data/orders';
 import InvoiceModal from '../../components/InvoiceModal';
+import { uploadToStorage, compressToBlob } from '../../lib/uploadMedia';
 import './AdminDashboard.css';
-
-/* ── Image Compressor Utility ── */
-const compressImage = (file: File, maxWidth = 800, maxHeight = 800): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        resolve(dataUrl);
-      };
-      img.onerror = (err) => reject(err);
-    };
-    reader.onerror = (err) => reject(err);
-  });
-};
 
 /* ── Auth guard ── */
 function useAdminGuard() {
@@ -248,16 +210,18 @@ export default function AdminDashboard() {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    
+
     setLoading(true);
     const uploadedUrls: string[] = [];
+    const failures: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       try {
-        const base64Str = await compressImage(files[i]);
-        uploadedUrls.push(base64Str);
+        const blob = await compressToBlob(files[i]);
+        uploadedUrls.push(await uploadToStorage(blob, files[i].name, 'photos'));
       } catch (err) {
-        console.error('Error compressing image:', err);
+        console.error('Error uploading image:', err);
+        failures.push(files[i].name);
       }
     }
 
@@ -270,31 +234,44 @@ export default function AdminDashboard() {
         setAdditionalImages(prev => [...prev, ...uploadedUrls]);
       }
     }
+
+    if (failures.length > 0) {
+      alert(
+        `Could not upload ${failures.length} image(s): ${failures.join(', ')}.\n\n` +
+        `Check that the "product-images" storage bucket exists and is public, ` +
+        `and that the Supabase project is not over its usage quota.`
+      );
+    }
+
+    e.target.value = '';
     setLoading(false);
   };
 
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Guard against oversized files — base64 in the DB gets very heavy.
-    const maxBytes = 25 * 1024 * 1024; // 25 MB
+    const maxBytes = 50 * 1024 * 1024; // 50 MB — videos go to Storage, not the DB
     if (file.size > maxBytes) {
-      alert('Video is too large (max 25MB). Please upload a shorter clip, or paste a hosted video link instead.');
+      alert('Video is too large (max 50MB). Please upload a shorter clip, or paste a hosted video link instead.');
+      e.target.value = '';
       return;
     }
 
     setLoading(true);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setVideo(reader.result as string);
+    try {
+      setVideo(await uploadToStorage(file, file.name, 'videos'));
+    } catch (err) {
+      console.error('Error uploading video:', err);
+      alert(
+        'Failed to upload the video.\n\n' +
+        'Check that the "product-images" storage bucket exists and is public, ' +
+        'and that the Supabase project is not over its usage quota.'
+      );
+    } finally {
+      e.target.value = '';
       setLoading(false);
-    };
-    reader.onerror = () => {
-      alert('Failed to read the video file. Please try again.');
-      setLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleDeleteProduct = async (id: string) => {
