@@ -9,7 +9,7 @@ import HeroSection from '../components/HeroSection';
 import ProductCard from '../components/ProductCard';
 import FAQAccordion from '../components/FAQAccordion';
 import StatsSection from '../components/StatsSection';
-import { getFeaturedProducts, type Product } from '../data/products';
+import { getFeaturedProducts, getProductsByCategory, type Product } from '../data/products';
 import { testimonials } from '../data/testimonials';
 import { faqs } from '../data/faqs';
 import './Home.css';
@@ -107,12 +107,32 @@ const services = [
 
 const previewFaqs = faqs.slice(0, 5);
 
+// Shown in the accessories preview grid until real accessory products are added
+// in the Admin Dashboard (they take over automatically).
+const accessoryFallbackImages = [
+  '/images/folding_lightweight.png',
+  '/images/luxury_road.png',
+  '/images/enclosed_cabin.png',
+  '/images/folding_lightweight.png',
+];
+
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
+  const [accessoryProducts, setAccessoryProducts] = React.useState<Product[]>([]);
 
   React.useEffect(() => {
     getFeaturedProducts().then(data => setFeaturedProducts(data));
+    getProductsByCategory('accessory').then(data => setAccessoryProducts(data));
   }, []);
+
+  // Real accessory photos when the catalogue has them, local scooter shots otherwise.
+  const accessoryImages = React.useMemo(() => {
+    const fromCatalogue = accessoryProducts.map(p => p.image).filter(Boolean).slice(0, 4);
+    return [
+      ...fromCatalogue,
+      ...accessoryFallbackImages.slice(fromCatalogue.length),
+    ];
+  }, [accessoryProducts]);
   return (
     <main>
       {/* ===== HERO ===== */}
@@ -257,19 +277,21 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.15 }}
             >
               <div className="acc-img-grid">
-                {[
-                  'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80',
-                  'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80',
-                  'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80',
-                  'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80',
-                ].map((src, i) => (
+                {accessoryImages.map((src, i) => (
                   <motion.div
                     key={i}
                     className="acc-img-item"
                     whileHover={{ scale: 1.04 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <img src={src} alt="Accessory" loading="lazy" />
+                    <img
+                      src={src}
+                      alt={accessoryProducts[i]?.name || 'Care Drive mobility scooter accessory'}
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = accessoryFallbackImages[i] || accessoryFallbackImages[0];
+                      }}
+                    />
                   </motion.div>
                 ))}
               </div>
