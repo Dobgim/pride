@@ -75,6 +75,12 @@ insert into storage.buckets (id, name, public)
 values ('product-images', 'product-images', true)
 on conflict (id) do update set public = true;
 
+-- The anon role must be able to SEE the bucket row, or the storage API
+-- reports "Bucket not found" on upload even though the bucket exists.
+drop policy if exists "buckets_anon_select" on storage.buckets;
+create policy "buckets_anon_select" on storage.buckets
+  for select to anon using (id = 'product-images');
+
 drop policy if exists "product_images_public_read" on storage.objects;
 drop policy if exists "product_images_anon_insert" on storage.objects;
 drop policy if exists "product_images_anon_update" on storage.objects;
