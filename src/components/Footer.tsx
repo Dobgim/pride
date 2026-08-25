@@ -73,9 +73,9 @@ export default function Footer() {
                   <Phone size={14} />
                   <span>+1 (912) 558-9673</span>
                 </a>
-                <a href="mailto:caredriveenclosedmobility@gmail.com" className="footer-contact-item">
+                <a href="mailto:caredriveenclosedmobility5@gmail.com" className="footer-contact-item">
                   <Mail size={14} />
-                  <span>caredriveenclosedmobility@gmail.com</span>
+                  <span>caredriveenclosedmobility5@gmail.com</span>
                 </a>
               </div>
               <div className="footer-social">

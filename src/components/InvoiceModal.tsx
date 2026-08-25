@@ -6,7 +6,7 @@ import './InvoiceModal.css';
 const COMPANY = {
   name: 'Care Drive Enclosed Mobility LLC',
   phone: '+1 (912) 558-9673',
-  email: 'caredriveenclosedmobility@gmail.com',
+  email: 'caredriveenclosedmobility5@gmail.com',
 };
 
 interface InvoiceModalProps {

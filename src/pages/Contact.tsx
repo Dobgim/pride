@@ -6,7 +6,7 @@ import './Contact.css';
 
 const contactInfo = [
   { icon: <Phone size={20} />, label: 'Phone', value: '+1 (912) 558-9673', sub: 'Mon–Sat 9am–6pm', href: 'tel:+19125589673' },
-  { icon: <Mail size={20} />, label: 'Email', value: 'caredriveenclosedmobility@gmail.com', sub: 'We reply within 24 hours', href: 'mailto:caredriveenclosedmobility@gmail.com' },
+  { icon: <Mail size={20} />, label: 'Email', value: 'caredriveenclosedmobility5@gmail.com', sub: 'We reply within 24 hours', href: 'mailto:caredriveenclosedmobility5@gmail.com' },
   { icon: <Clock size={20} />, label: 'Opening Hours', value: 'Mon–Sat: 9am – 6pm', sub: 'Sunday: Closed' },
 ];
 
