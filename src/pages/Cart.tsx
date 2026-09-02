@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, ShieldCheck, Truck, RotateCcw, CheckCircle, X, Send, User, Mail, Phone, Package } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { addOrderToSupabase, type Order } from '../data/orders';
+import { getDownPayment } from '../data/products';
 import './Cart.css';
 
 type PaymentOption = 'full' | 'down';
@@ -29,7 +30,14 @@ export default function Cart() {
 
   // Always free shipping
   const grandTotal = total;
-  const downPayment = total * 0.3; // 30% down payment
+
+  // The down payment is whatever the admin set on each product; products left
+  // blank fall back to the 30% default. Never a flat 30% of the basket.
+  const downPayment = items.reduce(
+    (sum, i) => sum + getDownPayment(i.product) * i.quantity,
+    0
+  );
+  const balanceOnDelivery = Math.max(grandTotal - downPayment, 0);
 
   const handleProceedToCheckout = () => {
     if (!paymentOption) {
@@ -64,7 +72,7 @@ export default function Cart() {
     const paymentSummary =
       paymentOption === 'full'
         ? `Full Payment — $${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
-        : `Down Payment (30%) — $${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })} | Balance on delivery: $${(grandTotal - downPayment).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+        : `Down Payment — $${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })} | Balance on delivery: $${balanceOnDelivery.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
 
     const messageBody = `
 NEW ORDER RECEIVED — Care Drive Mobility
@@ -312,13 +320,13 @@ Payment Option: ${paymentSummary}
                     <div className={`cart-radio-dot ${paymentOption === 'down' ? 'active' : ''}`} />
                   </div>
                   <div className="cart-payment-option-body">
-                    <div className="cart-payment-option-title">🤝 Down Payment (30%)</div>
+                    <div className="cart-payment-option-title">🤝 Down Payment</div>
                     <div className="cart-payment-option-desc">
-                      Pay 30% now — balance on delivery
+                      Pay the deposit now — balance on delivery
                     </div>
                     <div className="cart-payment-option-amount">
                       ${downPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      <span className="cart-payment-balance"> + ${(grandTotal - downPayment).toLocaleString(undefined, { minimumFractionDigits: 2 })} on delivery</span>
+                      <span className="cart-payment-balance"> + ${balanceOnDelivery.toLocaleString(undefined, { minimumFractionDigits: 2 })} on delivery</span>
                     </div>
                   </div>
                 </label>

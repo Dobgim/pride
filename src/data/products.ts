@@ -24,6 +24,21 @@ export interface Product {
 // No demo products — add your real products via the Admin Dashboard.
 export const INITIAL_PRODUCTS: Product[] = [];
 
+// ── Down payment ─────────────────────────────────────────────────────────────
+
+/**
+ * Fallback rate used only when the admin left the down payment blank on a
+ * product. Any product with an explicit `downPayment` uses that figure
+ * verbatim — the admin's number is the source of truth.
+ */
+export const DEFAULT_DOWN_PAYMENT_RATE = 0.3;
+
+/** The amount due up front for one unit of a product. */
+export const getDownPayment = (p: Pick<Product, 'price' | 'downPayment'>): number =>
+  p.downPayment != null && p.downPayment > 0
+    ? p.downPayment
+    : p.price * DEFAULT_DOWN_PAYMENT_RATE;
+
 // ── DB ↔ Client mappers ──────────────────────────────────────────────────────
 
 export const mapDbProductToClient = (db: any): Product => ({

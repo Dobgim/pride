@@ -13,6 +13,7 @@ import {
   addProductToSupabase,
   updateProductInSupabase,
   deleteProductFromSupabase,
+  getDownPayment,
   type Product
 } from '../../data/products';
 import {
@@ -797,6 +798,7 @@ export default function AdminDashboard() {
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Price</th>
+                                <th>Down Payment</th>
                                 <th>Stock</th>
                                 <th>Actions</th>
                               </tr>
@@ -814,6 +816,12 @@ export default function AdminDashboard() {
                                   </td>
                                   <td className="adm-td-cap">{p.category}</td>
                                   <td className="adm-td-bold">${p.price.toLocaleString()}</td>
+                                  <td className="adm-td-bold">
+                                    ${getDownPayment(p).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                    {p.downPayment == null && (
+                                      <span className="adm-td-muted" style={{ fontSize: 11, fontWeight: 400 }}> (auto)</span>
+                                    )}
+                                  </td>
                                   <td>
                                     <span className={`adm-status-badge ${p.inStock ? 'status-green' : 'status-red'}`}>
                                       {p.inStock ? 'In Stock' : 'Out of Stock'}
@@ -847,7 +855,13 @@ export default function AdminDashboard() {
                                   <div className="adm-product-name">{p.name}</div>
                                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', textTransform: 'capitalize', marginTop: 2 }}>{p.category}</div>
                                 </div>
-                                <div className="adm-product-card-price">${p.price.toLocaleString()}</div>
+                                <div className="adm-product-card-price">
+                                  ${p.price.toLocaleString()}
+                                  <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.6 }}>
+                                    ${getDownPayment(p).toLocaleString(undefined, { maximumFractionDigits: 0 })} down
+                                    {p.downPayment == null ? ' (auto)' : ''}
+                                  </div>
+                                </div>
                               </div>
                               <span className={`adm-status-badge ${p.inStock ? 'status-green' : 'status-red'}`} style={{ marginTop: 8, display: 'inline-flex' }}>
                                 {p.inStock ? '✓ In Stock' : '✗ Out of Stock'}
@@ -1102,6 +1116,17 @@ export default function AdminDashboard() {
                       placeholder={price ? `e.g. ${Math.round(Number(price) * 0.3)} (30% = $${Math.round(Number(price) * 0.3)})` : 'e.g. 450'}
                       min="0"
                     />
+                    <div style={{ fontSize: 11, marginTop: 6, color: 'rgba(255,255,255,0.5)' }}>
+                      {downPayment !== '' && Number(downPayment) > 0
+                        ? `Customers pay $${Number(downPayment).toLocaleString()} up front${
+                            Number(price) > 0
+                              ? `, $${Math.max(Number(price) - Number(downPayment), 0).toLocaleString()} on delivery`
+                              : ''
+                          }.`
+                        : `Blank — customers pay the 30% default${
+                            Number(price) > 0 ? ` ($${Math.round(Number(price) * 0.3).toLocaleString()})` : ''
+                          }.`}
+                    </div>
                   </div>
 
                   <div className="adm-field">

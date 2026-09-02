@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, ShoppingCart, Heart, Eye, BadgeCheck, Play, X } from 'lucide-react';
-import type { Product } from '../data/products';
+import { Star, ShoppingCart, Heart, Eye, BadgeCheck, Play, X, Images, Loader2 } from 'lucide-react';
+import { getDownPayment, loadProductById, type Product } from '../data/products';
 import { useCart } from '../context/CartContext';
+import ProductGallery from './ProductGallery';
 import './ProductCard.css';
 
 interface ProductCardProps {
@@ -32,6 +33,8 @@ export default function ProductCard({ product, index = 0, showCategory = false }
   const { addItem } = useCart();
   const [currentImgIndex, setCurrentImgIndex] = React.useState(0);
   const [showVideo, setShowVideo] = React.useState(false);
+  const [galleryImages, setGalleryImages] = React.useState<string[] | null>(null);
+  const [galleryLoading, setGalleryLoading] = React.useState(false);
   
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -48,6 +51,32 @@ export default function ProductCard({ product, index = 0, showCategory = false }
 
   const productImages = product.images && product.images.length > 0 ? product.images : [product.image];
   const displayImage = productImages[currentImgIndex] || product.image;
+  const downPayment = getDownPayment(product);
+
+  /**
+   * Open the full gallery. Listing queries skip the `specs` column that carries
+   * the extra photos, so when the card only knows the cover image we fetch the
+   * full row on demand rather than bloating every listing request.
+   */
+  const openGallery = async () => {
+    if (galleryLoading) return;
+
+    if (productImages.length > 1) {
+      setGalleryImages(productImages);
+      return;
+    }
+
+    setGalleryLoading(true);
+    try {
+      const full = await loadProductById(product.id);
+      const images = full?.images && full.images.length > 0 ? full.images : productImages;
+      setGalleryImages(images);
+    } catch {
+      setGalleryImages(productImages);
+    } finally {
+      setGalleryLoading(false);
+    }
+  };
 
   return (
     <motion.article
@@ -81,14 +110,29 @@ export default function ProductCard({ product, index = 0, showCategory = false }
             </button>
           </div>
         ) : (
-          <img
-            src={displayImage}
-            alt={product.name}
-            loading="lazy"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mobility_Scooter_-_HPIM1842.JPG';
-            }}
-          />
+          <button
+            type="button"
+            className="product-card-image-btn"
+            onClick={openGallery}
+            aria-label={`View photos of ${product.name}`}
+          >
+            <img
+              src={displayImage}
+              alt={product.name}
+              loading="lazy"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mobility_Scooter_-_HPIM1842.JPG';
+              }}
+            />
+            <span className="product-card-gallery-hint">
+              {galleryLoading ? (
+                <Loader2 size={13} className="product-card-gallery-spin" />
+              ) : (
+                <Images size={13} />
+              )}
+              {galleryLoading ? 'Loading…' : 'View photos'}
+            </span>
+          </button>
         )}
 
         {/* Play button if a video is available */}
@@ -190,6 +234,9 @@ export default function ProductCard({ product, index = 0, showCategory = false }
             {product.originalPrice && (
               <span className="price-original">${product.originalPrice.toLocaleString()}</span>
             )}
+            <span className="price-down">
+              or ${downPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })} down
+            </span>
           </div>
           <button
             className="btn btn-primary btn-sm product-add-btn"
@@ -200,6 +247,15 @@ export default function ProductCard({ product, index = 0, showCategory = false }
             Add to Cart
           </button>
         </div>
+
+        {galleryImages && (
+          <ProductGallery
+            images={galleryImages}
+            productName={product.name}
+            startIndex={Math.min(currentImgIndex, galleryImages.length - 1)}
+            onClose={() => setGalleryImages(null)}
+          />
+        )}
 
         {product.inStock ? (
           <div className="product-stock in-stock">In stock — ready to ship</div>

@@ -113,7 +113,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
       </div>
       <div style="text-align:right">
         <div class="party-label">Payment</div>
-        <div class="party-line">${order.paymentOption === 'full' ? 'Full Payment' : 'Down Payment (30%)'}</div>
+        <div class="party-line">${order.paymentOption === 'full' ? 'Full Payment' : 'Down Payment'}</div>
         <div class="party-line">Delivery: FREE 3-Day Shipping</div>
       </div>
     </div>
@@ -131,7 +131,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
       <div class="row grand"><span>Total</span><span>${money(order.total)}</span></div>
       ${
         order.paymentOption === 'down'
-          ? `<div class="row due"><span>Amount Due Now (30%)</span><span>${money(amountDueNow)}</span></div>
+          ? `<div class="row due"><span>Amount Due Now</span><span>${money(amountDueNow)}</span></div>
              <div class="row"><span>Balance on Delivery</span><span>${money(balanceDue)}</span></div>`
           : `<div class="row due"><span>Amount Due</span><span>${money(amountDueNow)}</span></div>`
       }
@@ -140,7 +140,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
     <div class="terms">
       <strong>Payment Terms:</strong> ${
         order.paymentOption === 'down'
-          ? `A 30% down payment of ${money(amountDueNow)} secures your order. The remaining balance of ${money(balanceDue)} is due upon delivery.`
+          ? `A down payment of ${money(amountDueNow)} secures your order. The remaining balance of ${money(balanceDue)} is due upon delivery.`
           : `Full payment of ${money(amountDueNow)} is due to confirm this order.`
       }
       <br/>We accept Zelle, Cash App, Chime, and Apple Pay. Please reference invoice ${invNo} with your payment.
@@ -184,7 +184,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
       `Shipping: FREE 3-Day Shipping`,
       `Total: ${money(order.total)}`,
       order.paymentOption === 'down'
-        ? `Amount Due Now (30%): ${money(amountDueNow)}%0D%0ABalance on Delivery: ${money(balanceDue)}`
+        ? `Amount Due Now: ${money(amountDueNow)}%0D%0ABalance on Delivery: ${money(balanceDue)}`
         : `Amount Due: ${money(amountDueNow)}`,
       '',
       'We accept Zelle, Cash App, Chime, and Apple Pay.',
@@ -247,7 +247,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
               <div style={{ textAlign: 'right' }}>
                 <div className="inv-party-label">Payment</div>
                 <div className="inv-party-line">
-                  {order.paymentOption === 'full' ? 'Full Payment' : 'Down Payment (30%)'}
+                  {order.paymentOption === 'full' ? 'Full Payment' : 'Down Payment'}
                 </div>
                 <div className="inv-party-line">Delivery: FREE 3-Day Shipping</div>
               </div>
@@ -280,7 +280,7 @@ export default function InvoiceModal({ order, onClose }: InvoiceModalProps) {
               <div className="inv-row inv-grand"><span>Total</span><span>{money(order.total)}</span></div>
               {order.paymentOption === 'down' ? (
                 <>
-                  <div className="inv-row inv-due"><span>Amount Due Now (30%)</span><span>{money(amountDueNow)}</span></div>
+                  <div className="inv-row inv-due"><span>Amount Due Now</span><span>{money(amountDueNow)}</span></div>
                   <div className="inv-row"><span>Balance on Delivery</span><span>{money(balanceDue)}</span></div>
                 </>
               ) : (

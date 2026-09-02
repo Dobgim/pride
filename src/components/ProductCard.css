@@ -234,7 +234,16 @@
 .product-price {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+/* Deposit set by the admin on the product (or the 30% fallback). */
+.price-down {
+  flex-basis: 100%;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-gray-500);
 }
 
 .price-current {
@@ -323,4 +332,58 @@
 .product-card-img-dot.active {
   background: var(--color-accent);
   transform: scale(1.2);
+}
+
+/* ===== TAP-TO-OPEN GALLERY ===== */
+.product-card-image-btn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+}
+
+.product-card-gallery-hint {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.product-card:hover .product-card-gallery-hint,
+.product-card-image-btn:focus-visible .product-card-gallery-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card-gallery-spin {
+  animation: product-card-spin 0.9s linear infinite;
+}
+
+@keyframes product-card-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Touch devices get no hover, so keep the affordance visible there. */
+@media (hover: none) {
+  .product-card-gallery-hint {
+    opacity: 1;
+    transform: none;
+  }
 }
